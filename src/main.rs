@@ -1,0 +1,3 @@
+mod commands;
+
+fn main() {}
