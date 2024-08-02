@@ -44,11 +44,11 @@ fn bench() {
         Tag::Br,
         Tag::Code("Hello world".to_owned(), TNArgument::Null),
         Tag::Br,
-        Tag::Ol(vec![
+        Tag::Ul(vec![
             Tag::El(NNBody::Text("abc".to_owned())),
             Tag::El(NNBody::Tags(vec![
                 Tag::El(NNBody::Text("def".to_owned())),
-                Tag::Ol(vec![
+                Tag::Ul(vec![
                     Tag::El(NNBody::Text("defabc".to_owned())),
                     Tag::El(NNBody::Text("defdef".to_owned())),
                 ]),
