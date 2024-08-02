@@ -21,10 +21,6 @@ pub fn t_new(id: Tid, body: Body, argument: Argument) -> Tag {
     Tag::new(id, body, argument)
 }
 
-pub trait IsNull {
-    fn is_null(&self) -> bool;
-}
-
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq)]
 #[serde(untagged)]
 pub enum Body {
@@ -93,4 +89,24 @@ pub enum Tid {
     Carousel,
     Code,
     Pre,
+}
+
+pub trait IsNull {
+    fn is_null(&self) -> bool;
+}
+
+pub trait ToDaletl {
+    fn to_daletl(self) -> Vec<Tag>;
+}
+
+pub trait ToDaletlTag {
+    fn to_daletl_tag(self) -> Tag;
+}
+
+pub trait ToDaletlBody {
+    fn to_daletl_body(self) -> Body;
+}
+
+pub trait ToDaletlArgument {
+    fn to_daletl_argument(self) -> Argument;
 }

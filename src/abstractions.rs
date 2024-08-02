@@ -1,6 +1,6 @@
 use num_enum::TryFromPrimitive;
 
-use crate::daletl::{self, t_new, Tid};
+use crate::daletl::{self, t_new, Tid, ToDaletl, ToDaletlArgument, ToDaletlBody, ToDaletlTag};
 
 const NB: daletl::Body = daletl::Body::Null;
 const NA: daletl::Argument = daletl::Argument::Null;
@@ -39,14 +39,6 @@ pub enum Tag {
     Pre(String),
 }
 
-pub trait ToDaletl {
-    fn to_daletl(self) -> Vec<daletl::Tag>;
-}
-
-pub trait ToDaletlTag {
-    fn to_daletl_tag(self) -> daletl::Tag;
-}
-
 impl ToDaletlTag for Tag {
     fn to_daletl_tag(self) -> daletl::Tag {
         match self {
@@ -82,14 +74,6 @@ impl ToDaletlTag for Tag {
             Tag::Pre(s) => t_new(Tid::Pre, s.to_daletl_body(), NA),
         }
     }
-}
-
-pub trait ToDaletlBody {
-    fn to_daletl_body(self) -> daletl::Body;
-}
-
-pub trait ToDaletlArgument {
-    fn to_daletl_argument(self) -> daletl::Argument;
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, TryFromPrimitive)]

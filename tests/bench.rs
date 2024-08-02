@@ -1,9 +1,10 @@
 use dalet::{
-    abstractions::{Body, HeadingLevel, NotNullBody, Tag, TextOrNullArgument, ToDaletl},
+    abstractions::{Body, HeadingLevel, NotNullBody, Tag, TextOrNullArgument},
+    daletl::ToDaletl,
     daletpack::*,
 };
 use flate2::Compression;
-use std::io::{read_to_string, Write};
+use std::io::Write;
 
 #[macro_export]
 macro_rules! iprint {

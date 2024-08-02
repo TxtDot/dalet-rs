@@ -3,7 +3,7 @@
 => gemini://example.com   A supremely cool Gemini capsule
 => sftp://example.com
 
-Hi
+This is paragraph
 
 =>https://example.com A cool website
 =>gopher://example.com      An even cooler gopherhole
