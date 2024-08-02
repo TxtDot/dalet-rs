@@ -2,7 +2,7 @@
 pub mod daletl;
 
 #[cfg(feature = "types")]
-pub mod abstractions;
+pub mod typed;
 
 #[cfg(feature = "daletpack")]
 pub mod daletpack;

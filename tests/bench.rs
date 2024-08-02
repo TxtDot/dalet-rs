@@ -1,7 +1,7 @@
 use dalet::{
-    abstractions::{Body, HeadingLevel, NotNullBody, Tag, TextOrNullArgument},
     daletl::ToDaletl,
     daletpack::*,
+    typed::{Body, HeadingLevel, NotNullBody, Tag, TextOrNullArgument},
 };
 use flate2::Compression;
 use std::io::Write;

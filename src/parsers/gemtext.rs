@@ -1,4 +1,4 @@
-use crate::abstractions::{Body, HeadingLevel, NotNullBody, Tag};
+use crate::typed::{Body, HeadingLevel, NotNullBody, Tag};
 
 #[derive(Debug)]
 pub enum GemTextParseError {
