@@ -36,6 +36,7 @@ pub enum Tag {
     Bl(NotNullBody, AlignArgument),
     Carousel(Vec<Tag>),
     Code(String, TextOrNullArgument),
+    Pre(String),
 }
 
 pub trait ToDaletl {
@@ -78,6 +79,7 @@ impl ToDaletlTag for Tag {
             Tag::Bl(b, a) => t_new(Tid::Bl, b.to_daletl_body(), a.to_daletl_argument()),
             Tag::Carousel(b) => t_new(Tid::Carousel, b.to_daletl_body(), NA),
             Tag::Code(s, a) => t_new(Tid::Code, s.to_daletl_body(), a.to_daletl_argument()),
+            Tag::Pre(s) => t_new(Tid::Pre, s.to_daletl_body(), NA),
         }
     }
 }

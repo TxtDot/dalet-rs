@@ -92,4 +92,5 @@ pub enum Tid {
     Bl,
     Carousel,
     Code,
+    Pre,
 }

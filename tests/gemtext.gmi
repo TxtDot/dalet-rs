@@ -1,0 +1,32 @@
+=> https://example.com    A cool website
+=> gopher://example.com   An even cooler gopherhole
+=> gemini://example.com   A supremely cool Gemini capsule
+=> sftp://example.com
+
+Hi
+
+=>https://example.com A cool website
+=>gopher://example.com      An even cooler gopherhole
+=> gemini://example.com A supremely cool Gemini capsule
+=>   sftp://example.com
+
+# Heading
+
+## Sub-heading
+
+### Sub-sub-heading
+
+* Mercury
+* Gemini
+* Apollo
+
+> Gemtext supports blockquotes.  The quoted content is written as a single long line, which begins with a single > character
+
+```
+preformatted
+=> ()
+# false heading
+text
+```
+
+This is paragraph

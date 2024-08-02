@@ -6,3 +6,6 @@ pub mod abstractions;
 
 #[cfg(feature = "daletpack")]
 pub mod daletpack;
+
+#[cfg(feature = "parsers")]
+pub mod parsers;

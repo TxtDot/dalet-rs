@@ -17,6 +17,7 @@ num_enum = "0.7.3"
 serde = { version = "1.0", features = ["derive"] }
 serde_repr = "0.1"
 zstd = "0.13.2"
+chumsky = { version = "=1.0.0-alpha.7", features = ["label"], optional = true }
 
 [dev-dependencies]
 rmp-serde = { version = "1.3.0" }
@@ -25,6 +26,7 @@ flate2 = "1.0"
 
 
 [features]
-default = ["types", "daletpack"]
+default = ["types", "daletpack", "parsers"]
+parsers = ["dep:chumsky", "types"]
 types = []
 daletpack = ["types"]
