@@ -17,6 +17,7 @@ impl Tag {
     }
 }
 
+#[inline]
 pub fn t_new(id: Tid, body: Body, argument: Argument) -> Tag {
     Tag::new(id, body, argument)
 }
@@ -29,6 +30,14 @@ pub enum Body {
     Null,
 }
 
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq)]
+#[serde(untagged)]
+pub enum Argument {
+    Text(String),
+    Number(u8),
+    Null,
+}
+
 impl IsNull for Body {
     fn is_null(&self) -> bool {
         match self {
@@ -36,14 +45,6 @@ impl IsNull for Body {
             _ => false,
         }
     }
-}
-
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq)]
-#[serde(untagged)]
-pub enum Argument {
-    Text(String),
-    Number(u8),
-    Null,
 }
 
 impl IsNull for Argument {
@@ -96,17 +97,21 @@ pub trait IsNull {
 }
 
 pub trait ToDaletl {
-    fn to_daletl(self) -> Vec<Tag>;
+    /// Convert to daletl root
+    fn to_dl(self) -> Vec<Tag>;
 }
 
 pub trait ToDaletlTag {
-    fn to_daletl_tag(self) -> Tag;
+    /// Convert to daletl tag
+    fn to_dl_tag(self) -> Tag;
 }
 
 pub trait ToDaletlBody {
-    fn to_daletl_body(self) -> Body;
+    /// Convert to daletl body
+    fn to_dl_body(self) -> Body;
 }
 
 pub trait ToDaletlArgument {
-    fn to_daletl_argument(self) -> Argument;
+    /// Convert to daletl arg
+    fn to_dl_arg(self) -> Argument;
 }

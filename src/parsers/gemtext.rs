@@ -1,4 +1,4 @@
-use crate::typed::{Body, HeadingLevel, NotNullBody, Tag};
+use crate::typed::{Body, Hl, NNBody, Tag};
 
 #[derive(Debug)]
 pub enum GemTextParseError {
@@ -38,20 +38,20 @@ pub fn parse_gemtext(s: String) -> Result<Vec<Tag>, GemTextParseError> {
             };
         } else if line.starts_with("# ") {
             let body = line.split_off(2);
-            page.push(Tag::H(body.trim().to_owned(), HeadingLevel::One));
+            page.push(Tag::H(body.trim().to_owned(), Hl::One));
         } else if line.starts_with("## ") {
             let body = line.split_off(3);
-            page.push(Tag::H(body.trim().to_owned(), HeadingLevel::Two));
+            page.push(Tag::H(body.trim().to_owned(), Hl::Two));
         } else if line.starts_with("### ") {
             let body = line.split_off(4);
-            page.push(Tag::H(body.trim().to_owned(), HeadingLevel::Three));
+            page.push(Tag::H(body.trim().to_owned(), Hl::Three));
         } else if line.starts_with("* ") {
             list_before = true;
             let body = line.split_off(2);
-            list.push(Tag::El(NotNullBody::Text(body)));
+            list.push(Tag::El(NNBody::Text(body)));
         } else if line.starts_with("> ") {
             let body = line.split_off(2);
-            page.push(Tag::Bq(NotNullBody::Text(body)));
+            page.push(Tag::Bq(NNBody::Text(body)));
         } else if line.starts_with("```") {
             if preformatted {
                 page.push(Tag::Pre(preformatted_text.clone()));
@@ -60,7 +60,7 @@ pub fn parse_gemtext(s: String) -> Result<Vec<Tag>, GemTextParseError> {
 
             preformatted = !preformatted;
         } else if !line.is_empty() {
-            page.push(Tag::P(NotNullBody::Text(line)));
+            page.push(Tag::P(NNBody::Text(line)));
         }
     }
 
