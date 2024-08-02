@@ -10,16 +10,16 @@ pub fn parse_gemtext(s: String) -> Result<Vec<Tag>, GemTextParseError> {
     let mut preformatted = false;
     let mut preformatted_text = String::new();
 
-    let mut before_is_ordered_list = false;
-    let mut ordered_list: Vec<Tag> = Vec::new();
+    let mut list_before = false;
+    let mut list: Vec<Tag> = Vec::new();
 
     for line in s.lines() {
         let mut line = line.trim().to_owned();
 
-        if before_is_ordered_list && !line.starts_with("* ") {
-            page.push(Tag::Ul(ordered_list.clone()));
-            before_is_ordered_list = false;
-            ordered_list.clear();
+        if list_before && !line.starts_with("* ") {
+            page.push(Tag::Ul(list.clone()));
+            list_before = false;
+            list.clear();
         } else if preformatted && !line.starts_with("```") {
             preformatted_text.push_str(&line);
             preformatted_text.push('\n');
@@ -46,9 +46,9 @@ pub fn parse_gemtext(s: String) -> Result<Vec<Tag>, GemTextParseError> {
             let body = line.split_off(4);
             page.push(Tag::H(body.trim().to_owned(), HeadingLevel::Three));
         } else if line.starts_with("* ") {
-            before_is_ordered_list = true;
+            list_before = true;
             let body = line.split_off(2);
-            ordered_list.push(Tag::El(NotNullBody::Text(body)));
+            list.push(Tag::El(NotNullBody::Text(body)));
         } else if line.starts_with("> ") {
             let body = line.split_off(2);
             page.push(Tag::Bq(NotNullBody::Text(body)));
