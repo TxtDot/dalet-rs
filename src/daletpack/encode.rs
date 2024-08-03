@@ -1,20 +1,20 @@
-use crate::daletl::{Argument, Body, IsNull, Tag, Tid};
+use crate::daletl::{Argument, Body, IsNull, Page, Tag, Tid};
 
 use super::{DaletPackError, TypeId};
 
-pub fn encode(root: &Vec<Tag>) -> Result<Vec<u8>, DaletPackError> {
-    Ok(zstd::bulk::compress(&encode_no_compress(root)?, 5)
+pub fn encode(page: &Page) -> Result<Vec<u8>, DaletPackError> {
+    Ok(zstd::bulk::compress(&encode_no_compress(page)?, 5)
         .map_err(|_| DaletPackError::ZstdCompressError)?)
 }
 
-pub fn encode_no_compress(root: &Vec<Tag>) -> Result<Vec<u8>, DaletPackError> {
-    if root.len() > 2usize.pow(32) {
-        return Err(DaletPackError::RootMaxSizeExceeded);
+pub fn encode_no_compress(page: &Page) -> Result<Vec<u8>, DaletPackError> {
+    if page.len() > 2usize.pow(32) {
+        return Err(DaletPackError::PageMaxSizeExceeded);
     }
 
     let mut bv: Vec<u8> = Vec::new();
 
-    for tag in root {
+    for tag in page {
         write_tag(&mut bv, tag)?;
     }
 

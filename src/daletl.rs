@@ -3,7 +3,7 @@ use num_enum::TryFromPrimitive;
 use serde::{Deserialize, Serialize};
 use serde_repr::{Deserialize_repr, Serialize_repr};
 
-pub type Root = Vec<Tag>;
+pub type Page = Vec<Tag>;
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq)]
 pub struct Tag {
@@ -98,7 +98,7 @@ pub trait IsNull {
     fn is_null(&self) -> bool;
 }
 
-pub trait ToDaletlRoot {
-    /// Convert to daletl root
-    fn to_dl_root(self) -> Root;
+pub trait ToDaletlPage {
+    /// Convert to daletl Page
+    fn to_dl_page(self) -> Page;
 }

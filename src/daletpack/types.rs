@@ -4,7 +4,7 @@ use num_enum::TryFromPrimitive;
 pub enum DaletPackError {
     StrMaxSizeExceeded,
     ArrMaxSizeExceeded,
-    RootMaxSizeExceeded,
+    PageMaxSizeExceeded,
     ZstdCompressError,
 
     WriteNullBody,

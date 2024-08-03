@@ -1,12 +1,12 @@
 use enum_procs::AutoFrom;
 use num_enum::TryFromPrimitive;
 
-use crate::daletl::{self, t_new, Tid, ToDaletlRoot};
+use crate::daletl::{self, t_new, Tid, ToDaletlPage};
 
 const NB: daletl::Body = daletl::Body::Null;
 const NA: daletl::Argument = daletl::Argument::Null;
 
-pub type Root = Vec<Tag>;
+pub type Page = Vec<Tag>;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Tag {
@@ -208,8 +208,8 @@ impl From<Vec<Tag>> for daletl::Body {
     }
 }
 
-impl ToDaletlRoot for Root {
-    fn to_dl_root(self) -> daletl::Root {
+impl ToDaletlPage for Page {
+    fn to_dl_page(self) -> daletl::Page {
         self.into_iter().map(|tag| tag.into()).collect()
     }
 }
