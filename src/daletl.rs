@@ -1,7 +1,9 @@
+use enum_procs::AutoFrom;
+use num_enum::TryFromPrimitive;
 use serde::{Deserialize, Serialize};
 use serde_repr::{Deserialize_repr, Serialize_repr};
 
-use num_enum::TryFromPrimitive;
+pub type Root = Vec<Tag>;
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq)]
 pub struct Tag {
@@ -22,7 +24,7 @@ pub fn t_new(id: Tid, body: Body, argument: Argument) -> Tag {
     Tag::new(id, body, argument)
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq)]
+#[derive(AutoFrom, Serialize, Deserialize, Debug, Clone, PartialEq, Eq)]
 #[serde(untagged)]
 pub enum Body {
     Text(String),
@@ -30,7 +32,7 @@ pub enum Body {
     Null,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq)]
+#[derive(AutoFrom, Serialize, Deserialize, Debug, Clone, PartialEq, Eq)]
 #[serde(untagged)]
 pub enum Argument {
     Text(String),
@@ -96,22 +98,7 @@ pub trait IsNull {
     fn is_null(&self) -> bool;
 }
 
-pub trait ToDaletl {
+pub trait ToDaletlRoot {
     /// Convert to daletl root
-    fn to_dl(self) -> Vec<Tag>;
-}
-
-pub trait ToDaletlTag {
-    /// Convert to daletl tag
-    fn to_dl_tag(self) -> Tag;
-}
-
-pub trait ToDaletlBody {
-    /// Convert to daletl body
-    fn to_dl_body(self) -> Body;
-}
-
-pub trait ToDaletlArgument {
-    /// Convert to daletl arg
-    fn to_dl_arg(self) -> Argument;
+    fn to_dl_root(self) -> Root;
 }

@@ -196,12 +196,23 @@ dependencies = [
  "bincode",
  "chumsky",
  "clap",
+ "enum-procs",
  "flate2",
  "num_enum",
  "rmp-serde",
  "serde",
  "serde_repr",
  "zstd",
+]
+
+[[package]]
+name = "enum-procs"
+version = "0.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e188616f4527e2cf6128e58622bb2fd16ebcfa37a200b2d16739c3ca227bf649"
+dependencies = [
+ "quote",
+ "syn",
 ]
 
 [[package]]

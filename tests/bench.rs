@@ -1,7 +1,10 @@
 use dalet::{
-    daletl::ToDaletl,
+    daletl::ToDaletlRoot,
     daletpack::*,
-    typed::{Body, Hl, NNBody, TNArgument, Tag},
+    typed::{
+        Body, Hl, NNBody, Root, TNArgument,
+        Tag::{self, *},
+    },
 };
 use flate2::Compression;
 use std::io::Write;
@@ -32,55 +35,53 @@ pub fn compress_zlib(data: &Vec<u8>) -> std::io::Result<Vec<u8>> {
 
 #[test]
 fn bench() {
-    let page: Vec<Tag> = vec![
-        Tag::H("I am heading".to_owned(), Hl::One),
-        Tag::H("Heading 2".to_owned(), Hl::Two),
-        Tag::El(NNBody::Tags(vec![
-            Tag::El(NNBody::Text("Some ".to_owned())),
-            Tag::B("bold".to_owned()),
-            Tag::I("italic".to_owned()),
-            Tag::S("strike".to_owned()),
-        ])),
-        Tag::Br,
-        Tag::Code("Hello world".to_owned(), TNArgument::Null),
-        Tag::Br,
-        Tag::Ul(vec![
-            Tag::El(NNBody::Text("abc".to_owned())),
-            Tag::El(NNBody::Tags(vec![
-                Tag::El(NNBody::Text("def".to_owned())),
-                Tag::Ul(vec![
-                    Tag::El(NNBody::Text("defabc".to_owned())),
-                    Tag::El(NNBody::Text("defdef".to_owned())),
-                ]),
-            ])),
-            Tag::El(NNBody::Text("xyz".to_owned())),
+    let page: Root = vec![
+        H("I am heading".into(), Hl::One),
+        H("Heading 2".into(), Hl::Two),
+        El(vec![
+            El("Some ".into()),
+            B("bold".into()),
+            I("italic".into()),
+            S("strike".into()),
+        ]
+        .into()),
+        Br,
+        Code("Hello world".into(), TNArgument::Null),
+        Br,
+        Ul(vec![
+            El("abc".into()),
+            El(vec![
+                El("def".into()),
+                Ul(vec![El("defabc".into()), El("defdef".into())]),
+            ]
+            .into()),
+            El("xyz".into()),
         ]),
-        Tag::Br,
-        Tag::El(NNBody::Tags(vec![
-            Tag::El(NNBody::Text("Lorem ipsum ".to_owned())),
-            Tag::Link(
-                Body::Tags(vec![Tag::Img("https://my-picture".to_owned())]),
-                "https://some-link".to_owned(),
+        Br,
+        El(vec![
+            El("Lorem ipsum ".into()),
+            Link(
+                vec![Img("https://my-picture".into())].into(),
+                "https://some-link".into(),
             ),
-            Tag::El(NNBody::Text(
-                " dolor sit amet consequetur adipiscing elit".to_owned(),
-            )),
-        ])),
-        Tag::Table(vec![
-            Tag::Tpcol(vec![
-                Tag::El(NNBody::Text("Col 1".to_owned())),
-                Tag::El(NNBody::Text("Col 2".to_owned())),
-                Tag::El(NNBody::Text("Col 3".to_owned())),
+            El(" dolor sit amet consequetur adipiscing elit".into()),
+        ]
+        .into()),
+        Table(vec![
+            Tpcol(vec![
+                El("Col 1".into()),
+                El("Col 2".into()),
+                El("Col 3".into()),
             ]),
-            Tag::Tcol(vec![
-                Tag::El(NNBody::Text("Never gonna".to_owned())),
-                Tag::El(NNBody::Text("give you".to_owned())),
-                Tag::El(NNBody::Text("up".to_owned())),
+            Tcol(vec![
+                El("Never gonna".into()),
+                El("give you".into()),
+                El("up".into()),
             ]),
         ]),
     ];
 
-    let dalet_page = page.to_dl();
+    let dalet_page = page.to_dl_root();
 
     let markdown = iprint!("Markdown", include_str!("./bench.md").as_bytes().to_vec());
     let daletpack = iprint!("Daletpack", encode_no_compress(&dalet_page).unwrap());
