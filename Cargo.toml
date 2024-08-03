@@ -1,12 +1,12 @@
 [package]
 name = "dalet"
-version = "1.0.0-pre4"
+version = "1.0.0-pre5"
 edition = "2021"
 authors = ["artegoser"]
 license = "MIT"
 description = "Dalet implementation in Rust"
-repository = "https://github.com/txtdot/dalet"
-homepage = "https://github.com/TxtDot/dalet/tree/main/libs/rust"
+repository = "https://github.com/txtdot/dalet-rs"
+homepage = "https://github.com/TxtDot/dalet-rs/tree/main/"
 readme = "./README.md"
 keywords = ["dalet"]
 categories = ["compression", "compilers", "encoding"]
@@ -17,7 +17,7 @@ num_enum = "0.7.3"
 serde = { version = "1.0", features = ["derive"] }
 serde_repr = "0.1"
 zstd = "0.13.2"
-chumsky = { version = "=1.0.0-alpha.7", features = ["label"], optional = true }
+# chumsky = { version = "=1.0.0-alpha.7", features = ["label"], optional = true }
 enum-procs = "0.3.0"
 
 [dev-dependencies]
@@ -28,6 +28,6 @@ flate2 = "1.0"
 
 [features]
 default = ["types", "daletpack", "parsers"]
-parsers = ["dep:chumsky", "types"]
+parsers = ["types"]
 types = []
 daletpack = ["types"]

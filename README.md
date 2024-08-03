@@ -8,4 +8,4 @@
 
 </div>
 
-Main implementation of Dalet in rust, with parsers.
+Main implementation of [Dalet](https://github.com/txtdot/dalet) in rust, with parsers.
