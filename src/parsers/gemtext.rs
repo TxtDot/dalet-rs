@@ -1,4 +1,7 @@
-use crate::typed::{Body, Hl, NNBody, Tag};
+use crate::typed::{
+    Body, Hl, NNBody,
+    Tag::{self, *},
+};
 
 #[derive(Debug)]
 pub enum GemTextParseError {
@@ -8,7 +11,7 @@ pub enum GemTextParseError {
 pub fn parse_gemtext(s: String) -> Result<Vec<Tag>, GemTextParseError> {
     let mut page: Vec<Tag> = Vec::new();
     let mut preformatted = false;
-    let mut preformatted_text = String::new();
+    let mut preformatted_text: Vec<String> = Vec::new();
 
     let mut list_before = false;
     let mut list: Vec<Tag> = Vec::new();
@@ -21,8 +24,7 @@ pub fn parse_gemtext(s: String) -> Result<Vec<Tag>, GemTextParseError> {
             list_before = false;
             list.clear();
         } else if preformatted && !line.starts_with("```") {
-            preformatted_text.push_str(&line);
-            preformatted_text.push('\n');
+            preformatted_text.push(line);
         } else if line.starts_with("=>") {
             let body = line.split_off(2);
             let mut body = body.trim().splitn(2, " ");
@@ -30,37 +32,36 @@ pub fn parse_gemtext(s: String) -> Result<Vec<Tag>, GemTextParseError> {
             let url = body.next().ok_or(GemTextParseError::InvalidLink)?.trim();
 
             match body.next() {
-                Some(label) => page.push(Tag::Link(
-                    Body::Text(label.trim().to_owned()),
-                    url.to_owned(),
-                )),
-                None => page.push(Tag::Link(Body::Null, url.to_owned())),
+                Some(label) => {
+                    page.push(P(vec![Btn(label.trim().into(), url.into()).into()].into()))
+                }
+                None => page.push(P(vec![Btn(Body::Null, url.into())].into())),
             };
         } else if line.starts_with("# ") {
             let body = line.split_off(2);
-            page.push(Tag::H(body.trim().to_owned(), Hl::One));
+            page.push(H(body.trim().into(), Hl::One));
         } else if line.starts_with("## ") {
             let body = line.split_off(3);
-            page.push(Tag::H(body.trim().to_owned(), Hl::Two));
+            page.push(H(body.trim().into(), Hl::Two));
         } else if line.starts_with("### ") {
             let body = line.split_off(4);
-            page.push(Tag::H(body.trim().to_owned(), Hl::Three));
+            page.push(H(body.trim().into(), Hl::Three));
         } else if line.starts_with("* ") {
             list_before = true;
             let body = line.split_off(2);
-            list.push(Tag::El(NNBody::Text(body)));
+            list.push(El(body.into()));
         } else if line.starts_with("> ") {
             let body = line.split_off(2);
-            page.push(Tag::Bq(NNBody::Text(body)));
+            page.push(Bq(body.into()));
         } else if line.starts_with("```") {
             if preformatted {
-                page.push(Tag::Pre(preformatted_text.clone()));
+                page.push(Pre(preformatted_text.join("\n")));
                 preformatted_text.clear();
             }
 
             preformatted = !preformatted;
         } else if !line.is_empty() {
-            page.push(Tag::P(NNBody::Text(line)));
+            page.push(P(line.into()));
         }
     }
 
