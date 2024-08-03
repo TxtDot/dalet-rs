@@ -2,7 +2,7 @@ use dalet::{
     daletl::ToDaletlPage,
     daletpack::*,
     typed::{
-        Body, Hl, NNBody, Page, TNArgument,
+        Body, Hl, NNBody, Page, TNArg,
         Tag::{self, *},
     },
 };
@@ -38,7 +38,7 @@ fn bench() {
     let page: Page = vec![
         H("I am heading".into(), Hl::One),
         H("Heading 2".into(), Hl::Two),
-        El(vec![
+        P(vec![
             El("Some ".into()),
             B("bold".into()),
             I("italic".into()),
@@ -46,7 +46,7 @@ fn bench() {
         ]
         .into()),
         Br,
-        Code("Hello world".into(), TNArgument::Null),
+        Code("Hello world".into(), TNArg::Null),
         Br,
         Ul(vec![
             El("abc".into()),
@@ -58,7 +58,7 @@ fn bench() {
             El("xyz".into()),
         ]),
         Br,
-        El(vec![
+        P(vec![
             El("Lorem ipsum ".into()),
             Link(
                 vec![Img("https://my-picture".into())].into(),

@@ -11,35 +11,94 @@ pub type Page = Vec<Tag>;
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Tag {
     El(NNBody),
-    H(String, Hl),
+    H(TBody, Hl),
     P(NNBody),
     Br,
     Ul(Vec<Tag>),
     Ol(Vec<Tag>),
-    Row(Vec<Tag>, AlignArgument),
-    Link(Body, String),
-    Navlink(Body, String),
-    Btn(Body, String),
-    Navbtn(Body, String),
-    Img(String),
+    Row(Vec<Tag>, AlignArg),
+    Link(Body, TArg),
+    Navlink(Body, TArg),
+    Btn(Body, TArg),
+    Navbtn(Body, TArg),
+    Img(TArg),
     Table(Vec<Tag>),
     Tcol(Vec<Tag>),
     Tpcol(Vec<Tag>),
     Hr,
-    B(String),
-    I(String),
+    B(TBody),
+    I(TBody),
     Bq(NNBody),
     Footlnk(NNArg),
-    Footn(String, NNArg),
+    Footn(TBody, NNArg),
     A(NNArg),
-    S(String),
-    Sup(String),
-    Sub(String),
+    S(TBody),
+    Sup(TBody),
+    Sub(TBody),
     Disc(NNBody),
-    Bl(NNBody, AlignArgument),
+    Bl(NNBody, AlignArg),
     Carousel(Vec<Tag>),
-    Code(String, TNArgument),
-    Pre(String),
+    Code(TBody, TNArg),
+    Pre(TBody),
+}
+
+#[derive(AutoFrom, Debug, Clone, PartialEq, Eq)]
+pub enum Body {
+    Text(String),
+    Tags(Vec<Tag>),
+    Null,
+}
+
+#[derive(AutoFrom, Debug, Clone, PartialEq, Eq)]
+pub enum NNBody {
+    Text(String),
+    Tags(Vec<Tag>),
+}
+
+/// Text body
+pub type TBody = String;
+
+#[derive(AutoFrom, Debug, Clone, PartialEq, Eq)]
+pub enum Arg {
+    Text(String),
+    Number(u8),
+    Null,
+}
+
+#[derive(AutoFrom, Debug, Clone, PartialEq, Eq)]
+pub enum TNArg {
+    Text(String),
+    Null,
+}
+
+/// Text argument
+pub type TArg = String;
+
+#[derive(AutoFrom, Debug, Clone, PartialEq, Eq)]
+/// Not null argument
+pub enum NNArg {
+    Text(String),
+    Number(u8),
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, TryFromPrimitive)]
+#[repr(u8)]
+pub enum AlignArg {
+    Start,
+    Center,
+    End,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, TryFromPrimitive)]
+#[repr(u8)]
+/// Heading level
+pub enum Hl {
+    One = 1,
+    Two,
+    Three,
+    Four,
+    Five,
+    Six,
 }
 
 impl From<Tag> for daletl::Tag {
@@ -73,22 +132,10 @@ impl From<Tag> for daletl::Tag {
             Tag::Disc(b) => t_new(Tid::Disc, b.into(), NA),
             Tag::Bl(b, a) => t_new(Tid::Bl, b.into(), a.into()),
             Tag::Carousel(b) => t_new(Tid::Carousel, b.into(), NA),
-            Tag::Code(s, a) => t_new(Tid::Code, s.into(), a.into()),
-            Tag::Pre(s) => t_new(Tid::Pre, s.into(), NA),
+            Tag::Code(b, a) => t_new(Tid::Code, b.into(), a.into()),
+            Tag::Pre(b) => t_new(Tid::Pre, b.into(), NA),
         }
     }
-}
-
-#[derive(Debug, Clone, PartialEq, Eq, TryFromPrimitive)]
-#[repr(u8)]
-/// Heading level
-pub enum Hl {
-    One = 1,
-    Two,
-    Three,
-    Four,
-    Five,
-    Six,
 }
 
 impl From<Hl> for daletl::Argument {
@@ -104,44 +151,23 @@ impl From<Hl> for daletl::Argument {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, TryFromPrimitive)]
-#[repr(u8)]
-pub enum AlignArgument {
-    Start,
-    Center,
-    End,
-}
-
-impl From<AlignArgument> for daletl::Argument {
-    fn from(item: AlignArgument) -> daletl::Argument {
+impl From<AlignArg> for daletl::Argument {
+    fn from(item: AlignArg) -> daletl::Argument {
         match item {
-            AlignArgument::Start => NA,
-            AlignArgument::Center => 1u8.into(),
-            AlignArgument::End => 2u8.into(),
+            AlignArg::Start => NA,
+            AlignArg::Center => 1u8.into(),
+            AlignArg::End => 2u8.into(),
         }
     }
 }
 
-#[derive(AutoFrom, Debug, Clone, PartialEq, Eq)]
-pub enum TNArgument {
-    Text(String),
-    Null,
-}
-
-impl From<TNArgument> for daletl::Argument {
-    fn from(item: TNArgument) -> daletl::Argument {
+impl From<TNArg> for daletl::Argument {
+    fn from(item: TNArg) -> daletl::Argument {
         match item {
-            TNArgument::Text(s) => s.into(),
-            TNArgument::Null => NA,
+            TNArg::Text(s) => s.into(),
+            TNArg::Null => NA,
         }
     }
-}
-
-#[derive(AutoFrom, Debug, Clone, PartialEq, Eq)]
-pub enum Body {
-    Text(String),
-    Tags(Vec<Tag>),
-    Null,
 }
 
 impl From<Body> for daletl::Body {
@@ -154,13 +180,6 @@ impl From<Body> for daletl::Body {
     }
 }
 
-#[derive(AutoFrom, Debug, Clone, PartialEq, Eq)]
-pub enum Arg {
-    Text(String),
-    Number(u8),
-    Null,
-}
-
 impl From<Arg> for daletl::Argument {
     fn from(item: Arg) -> daletl::Argument {
         match item {
@@ -171,13 +190,6 @@ impl From<Arg> for daletl::Argument {
     }
 }
 
-#[derive(AutoFrom, Debug, Clone, PartialEq, Eq)]
-/// Not null argument
-pub enum NNArg {
-    Text(String),
-    Number(u8),
-}
-
 impl From<NNArg> for daletl::Argument {
     fn from(item: NNArg) -> daletl::Argument {
         match item {
@@ -185,12 +197,6 @@ impl From<NNArg> for daletl::Argument {
             NNArg::Text(v) => v.into(),
         }
     }
-}
-
-#[derive(AutoFrom, Debug, Clone, PartialEq, Eq)]
-pub enum NNBody {
-    Text(String),
-    Tags(Vec<Tag>),
 }
 
 impl From<NNBody> for daletl::Body {

@@ -1,9 +1,9 @@
 use crate::daletl::{Argument, Body, IsNull, Page, Tag, Tid};
 
-use super::{DaletPackError, TypeId};
+use super::{utils, DaletPackError, TypeId};
 
 pub fn encode(page: &Page) -> Result<Vec<u8>, DaletPackError> {
-    Ok(zstd::bulk::compress(&encode_no_compress(page)?, 5)
+    Ok(utils::compress_zstd(&encode_no_compress(page)?)
         .map_err(|_| DaletPackError::ZstdCompressError)?)
 }
 
