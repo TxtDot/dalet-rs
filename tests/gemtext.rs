@@ -4,7 +4,7 @@ use dalet::parsers::gemtext::parse_gemtext;
 fn gem_text() {
     let text = include_str!("./gemtext.gmi");
 
-    let parsed = parse_gemtext(text.to_owned()).unwrap();
+    let parsed = parse_gemtext(&text).unwrap();
 
     println!("{:#?}", parsed);
 }

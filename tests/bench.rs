@@ -1,10 +1,7 @@
 use dalet::{
     daletl::ToDaletlPage,
     daletpack::*,
-    typed::{
-        Body, Hl, NNBody, Page, TNArg,
-        Tag::{self, *},
-    },
+    typed::{Hl, Page, TNArg, Tag::*},
 };
 use flate2::Compression;
 use std::io::Write;
