@@ -1,5 +1,5 @@
 use crate::typed::{
-    Body, Hl,
+    Body, Hl, TNArg,
     Tag::{self, *},
 };
 
@@ -32,10 +32,10 @@ pub fn parse_gemtext(s: &str) -> Result<Vec<Tag>, GemTextParseError> {
             let url = body.next().ok_or(GemTextParseError::InvalidLink)?.trim();
 
             match body.next() {
-                Some(label) => {
-                    page.push(P(vec![Btn(label.trim().into(), url.into()).into()].into()))
-                }
-                None => page.push(P(vec![Btn(Body::Null, url.into())].into())),
+                Some(label) => page.push(P(
+                    vec![Navlink(label.trim().into(), url.into()).into()].into()
+                )),
+                None => page.push(P(vec![Navlink(Body::Null, url.into())].into())),
             };
         } else if line.starts_with("# ") {
             let body = line.split_off(2);
@@ -47,15 +47,15 @@ pub fn parse_gemtext(s: &str) -> Result<Vec<Tag>, GemTextParseError> {
             let body = line.split_off(4);
             page.push(H(body.trim().into(), Hl::Three));
         } else if line.starts_with("* ") {
-            list_before = true;
             let body = line.split_off(2);
             list.push(El(body.into()));
+            list_before = true;
         } else if line.starts_with("> ") {
             let body = line.split_off(2);
             page.push(Bq(body.into()));
         } else if line.starts_with("```") {
             if preformatted {
-                page.push(Pre(preformatted_text.join("\n")));
+                page.push(Code(preformatted_text.join("\n"), TNArg::Null));
                 preformatted_text.clear();
             }
 
