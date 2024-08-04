@@ -19,12 +19,12 @@ pub fn parse_gemtext(s: &str) -> Result<Vec<Tag>, GemTextParseError> {
     for line in s.lines() {
         let mut line = line.trim().to_owned();
 
-        if list_before && !line.starts_with("* ") {
+        if preformatted && !line.starts_with("```") {
+            preformatted_text.push(line);
+        } else if list_before && !line.starts_with("* ") {
             page.push(Tag::Ul(list.clone()));
             list_before = false;
             list.clear();
-        } else if preformatted && !line.starts_with("```") {
-            preformatted_text.push(line);
         } else if line.starts_with("=>") {
             let body = line.split_off(2);
             let mut body = body.trim().splitn(2, " ");
