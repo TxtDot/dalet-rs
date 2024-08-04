@@ -27,7 +27,7 @@ pub fn parse_gemtext(s: &str) -> Result<Vec<Tag>, GemTextParseError> {
             list.clear();
         } else if line.starts_with("=>") {
             let body = line.split_off(2);
-            let mut body = body.trim().splitn(2, " ");
+            let mut body = body.trim().splitn(2, char::is_whitespace);
 
             let url = body.next().ok_or(GemTextParseError::InvalidLink)?.trim();
 

@@ -151,7 +151,7 @@ dependencies = [
 
 [[package]]
 name = "dalet"
-version = "1.0.0-pre9"
+version = "1.0.0-pre10"
 dependencies = [
  "bincode",
  "clap",
