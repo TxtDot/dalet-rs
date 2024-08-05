@@ -116,26 +116,18 @@ impl From<Vec<Tag>> for DlBody {
     }
 }
 
-impl ToDaletlPage for Page {
-    fn to_dl_page(self) -> DlPage {
-        self.into_iter().map(|tag| tag.into()).collect()
-    }
-}
-
-impl IsNull for DlBody {
-    fn is_null(&self) -> bool {
-        match self {
-            Self::Null => true,
-            _ => false,
+impl From<Vec<Tag>> for DlPage {
+    fn from(value: Vec<Tag>) -> Self {
+        Self {
+            data: value.into_iter().map(|t| t.into()).collect(),
         }
     }
 }
 
-impl IsNull for DlArgument {
-    fn is_null(&self) -> bool {
-        match self {
-            Self::Null => true,
-            _ => false,
+impl From<Page> for DlPage {
+    fn from(value: Page) -> Self {
+        Self {
+            data: value.data.into_iter().map(|t| t.into()).collect(),
         }
     }
 }

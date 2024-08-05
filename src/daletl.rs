@@ -3,7 +3,10 @@ use num_enum::TryFromPrimitive;
 use serde::{Deserialize, Serialize};
 use serde_repr::{Deserialize_repr, Serialize_repr};
 
-pub type DlPage = Vec<DlTag>;
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq)]
+pub struct DlPage {
+    pub data: Vec<DlTag>,
+}
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq)]
 pub struct DlTag {
@@ -78,9 +81,4 @@ pub enum DlTid {
 
 pub trait IsNull {
     fn is_null(&self) -> bool;
-}
-
-pub trait ToDaletlPage {
-    /// Convert to daletl Page
-    fn to_dl_page(self) -> DlPage;
 }

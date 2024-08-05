@@ -1,7 +1,12 @@
 use enum_procs::AutoFrom;
 use num_enum::TryFromPrimitive;
 
-pub type Page = Vec<Tag>;
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Page {
+    pub data: Vec<Tag>,
+}
+
+pub struct ConversionError;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Tag {

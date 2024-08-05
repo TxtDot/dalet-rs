@@ -8,13 +8,13 @@ pub fn encode(page: &DlPage) -> Result<Vec<u8>, DaletPackError> {
 }
 
 pub fn encode_no_compress(page: &DlPage) -> Result<Vec<u8>, DaletPackError> {
-    if page.len() > 2usize.pow(32) {
+    if page.data.len() > 2usize.pow(32) {
         return Err(DaletPackError::PageMaxSizeExceeded);
     }
 
     let mut bv: Vec<u8> = Vec::new();
 
-    for tag in page {
+    for tag in &page.data {
         write_tag(&mut bv, tag)?;
     }
 

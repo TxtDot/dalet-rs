@@ -1,5 +1,4 @@
 use dalet::{
-    daletl::ToDaletlPage,
     daletpack::*,
     typed::{Hl, Page, TNArg, Tag::*},
 };
@@ -32,7 +31,7 @@ pub fn compress_zlib(data: &Vec<u8>) -> std::io::Result<Vec<u8>> {
 
 #[test]
 fn bench() {
-    let page: Page = vec![
+    let page = vec![
         H("I am heading".into(), Hl::One),
         H("Heading 2".into(), Hl::Two),
         P(vec![
@@ -78,7 +77,7 @@ fn bench() {
         ]),
     ];
 
-    let dalet_page = page.to_dl_page();
+    let dalet_page = page.into();
 
     let markdown = iprint!("Markdown", include_str!("./bench.md").as_bytes().to_vec());
     let daletpack = iprint!("Daletpack", encode_no_compress(&dalet_page).unwrap());
