@@ -1,8 +1,6 @@
 use enum_procs::AutoFrom;
 use num_enum::TryFromPrimitive;
 
-use crate::daletl::{self, ToDaletlPage};
-
 pub type Page = Vec<Tag>;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -96,10 +94,4 @@ pub enum Hl {
     Four,
     Five,
     Six,
-}
-
-impl ToDaletlPage for Page {
-    fn to_dl_page(self) -> daletl::Page {
-        self.into_iter().map(|tag| tag.into()).collect()
-    }
 }

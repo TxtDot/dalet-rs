@@ -1,13 +1,13 @@
-use crate::daletl::{DlArgument, DlBody, DlTag, DlTid, IsNull, Page};
+use crate::daletl::{DlArgument, DlBody, DlPage, DlTag, DlTid, IsNull};
 
 use super::{utils, DaletPackError, TypeId};
 
-pub fn encode(page: &Page) -> Result<Vec<u8>, DaletPackError> {
+pub fn encode(page: &DlPage) -> Result<Vec<u8>, DaletPackError> {
     Ok(utils::compress_zstd(&encode_no_compress(page)?)
         .map_err(|_| DaletPackError::ZstdCompressError)?)
 }
 
-pub fn encode_no_compress(page: &Page) -> Result<Vec<u8>, DaletPackError> {
+pub fn encode_no_compress(page: &DlPage) -> Result<Vec<u8>, DaletPackError> {
     if page.len() > 2usize.pow(32) {
         return Err(DaletPackError::PageMaxSizeExceeded);
     }
