@@ -14,13 +14,12 @@ pub enum DaletPackError {
 #[derive(Debug, Clone, PartialEq, Eq, TryFromPrimitive, Copy)]
 #[repr(u8)]
 pub enum TypeId {
-    Int8 = 1,
-    Str8 = 4,
-    Str16,
-    Str32,
+    StrEnd = 0,
+    Str,
+    Int8,
     TagArray,
     TagArrayEnd,
-    TagId = 12,
+    TagId,
     TagIdBody,
     TagIdArgument,
     TagIdBodyArgument,

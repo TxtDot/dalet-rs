@@ -33,18 +33,9 @@ fn write_str(bv: &mut Vec<u8>, string: &String) -> Result<(), DaletPackError> {
         return Err(DaletPackError::StrMaxSizeExceeded);
     }
 
-    if size <= 256 {
-        bv.push(TypeId::Str8 as u8);
-        bv.push((size - 1) as u8);
-    } else if size <= 65536 {
-        bv.push(TypeId::Str16 as u8);
-        bv.extend(((size - 1) as u16).to_be_bytes());
-    } else {
-        bv.push(TypeId::Str32 as u8);
-        bv.extend(((size - 1) as u32).to_be_bytes());
-    }
-
+    bv.push(TypeId::Str as u8);
     bv.extend_from_slice(string.as_bytes());
+    bv.push(TypeId::StrEnd as u8);
 
     Ok(())
 }
