@@ -1,4 +1,4 @@
-use crate::daletl::{Argument, Body, IsNull, Page, Tag, Tid};
+use crate::daletl::{DlArgument, DlBody, DlTag, DlTid, IsNull, Page};
 
 use super::{utils, DaletPackError, TypeId};
 
@@ -49,7 +49,7 @@ fn write_str(bv: &mut Vec<u8>, string: &String) -> Result<(), DaletPackError> {
     Ok(())
 }
 
-fn write_array(bv: &mut Vec<u8>, arr: &Vec<Tag>) -> Result<(), DaletPackError> {
+fn write_array(bv: &mut Vec<u8>, arr: &Vec<DlTag>) -> Result<(), DaletPackError> {
     if arr.len() > 2usize.pow(32) {
         return Err(DaletPackError::ArrMaxSizeExceeded);
     }
@@ -65,8 +65,8 @@ fn write_array(bv: &mut Vec<u8>, arr: &Vec<Tag>) -> Result<(), DaletPackError> {
     Ok(())
 }
 
-fn write_tag(bv: &mut Vec<u8>, tag: &Tag) -> Result<(), DaletPackError> {
-    if tag.id == Tid::El {
+fn write_tag(bv: &mut Vec<u8>, tag: &DlTag) -> Result<(), DaletPackError> {
+    if tag.id == DlTid::El {
         write_tag_body(bv, &tag.body)?;
     } else if tag.body.is_null() && tag.argument.is_null() {
         bv.push(TypeId::TagId as u8);
@@ -89,21 +89,21 @@ fn write_tag(bv: &mut Vec<u8>, tag: &Tag) -> Result<(), DaletPackError> {
     Ok(())
 }
 
-fn write_tag_body(bv: &mut Vec<u8>, body: &Body) -> Result<(), DaletPackError> {
+fn write_tag_body(bv: &mut Vec<u8>, body: &DlBody) -> Result<(), DaletPackError> {
     match body {
-        Body::Text(s) => write_str(bv, s)?,
-        Body::Tags(tags) => write_array(bv, tags)?,
-        Body::Null => Err(DaletPackError::WriteNullBody)?,
+        DlBody::Text(s) => write_str(bv, s)?,
+        DlBody::Tags(tags) => write_array(bv, tags)?,
+        DlBody::Null => Err(DaletPackError::WriteNullBody)?,
     };
 
     Ok(())
 }
 
-fn write_tag_argument(bv: &mut Vec<u8>, argument: &Argument) -> Result<(), DaletPackError> {
+fn write_tag_argument(bv: &mut Vec<u8>, argument: &DlArgument) -> Result<(), DaletPackError> {
     match argument {
-        Argument::Text(s) => write_str(bv, s)?,
-        Argument::Number(n) => write_int(bv, *n),
-        Argument::Null => Err(DaletPackError::WriteNullArgument)?,
+        DlArgument::Text(s) => write_str(bv, s)?,
+        DlArgument::Number(n) => write_int(bv, *n),
+        DlArgument::Null => Err(DaletPackError::WriteNullArgument)?,
     };
 
     Ok(())
