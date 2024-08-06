@@ -6,6 +6,12 @@ pub struct Page {
     pub data: Vec<Tag>,
 }
 
+impl Page {
+    pub fn new(data: Vec<Tag>) -> Self {
+        Self { data }
+    }
+}
+
 pub struct ConversionError;
 
 #[derive(Debug, Clone, PartialEq, Eq)]

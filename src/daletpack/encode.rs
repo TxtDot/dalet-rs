@@ -22,7 +22,7 @@ pub fn encode_no_compress(page: &DlPage) -> Result<Vec<u8>, DaletPackError> {
 }
 
 fn write_int(bv: &mut Vec<u8>, n: u8) {
-    bv.push(1);
+    bv.push(TypeId::Number as u8);
     bv.push(n);
 }
 
@@ -33,9 +33,9 @@ fn write_str(bv: &mut Vec<u8>, string: &String) -> Result<(), DaletPackError> {
         return Err(DaletPackError::StrMaxSizeExceeded);
     }
 
-    bv.push(TypeId::Str as u8);
+    bv.push(TypeId::Text as u8);
     bv.extend_from_slice(string.as_bytes());
-    bv.push(TypeId::StrEnd as u8);
+    bv.push(TypeId::TextEnd as u8);
 
     Ok(())
 }
@@ -45,13 +45,13 @@ fn write_array(bv: &mut Vec<u8>, arr: &Vec<DlTag>) -> Result<(), DaletPackError>
         return Err(DaletPackError::ArrMaxSizeExceeded);
     }
 
-    bv.push(TypeId::TagArray as u8);
+    bv.push(TypeId::Tags as u8);
 
     for tag in arr {
         write_tag(bv, tag)?;
     }
 
-    bv.push(TypeId::TagArrayEnd as u8);
+    bv.push(TypeId::TagsEnd as u8);
 
     Ok(())
 }

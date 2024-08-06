@@ -1,6 +1,6 @@
 use dalet::{
     daletpack::*,
-    typed::{Hl, Page, TNArg, Tag::*},
+    typed::{Hl, TNArg, Tag::*},
 };
 use flate2::Compression;
 use std::io::Write;
@@ -11,7 +11,7 @@ macro_rules! iprint {
         let start = std::time::Instant::now();
         let result = $func;
         let elapsed = start.elapsed();
-        println!("{} ({:#?}): {} bytes", $name, elapsed, result.len());
+        println!("{} ({:#?}): {}", $name, elapsed, result.len());
 
         result
     }};
@@ -32,7 +32,7 @@ pub fn compress_zlib(data: &Vec<u8>) -> std::io::Result<Vec<u8>> {
 #[test]
 fn bench() {
     let page = vec![
-        H("I am heading".into(), Hl::One),
+        H("Heading 1".into(), Hl::One),
         H("Heading 2".into(), Hl::Two),
         P(vec![
             El("Some ".into()),
@@ -87,7 +87,7 @@ fn bench() {
     println!();
 
     iprint!("Markdown zstd", utils::compress_zstd(&markdown).unwrap());
-    iprint!("Daletpack zstd", utils::compress_zstd(&daletpack).unwrap());
+    let daletpack = iprint!("Daletpack zstd", utils::compress_zstd(&daletpack).unwrap());
     iprint!(
         "Messagepack zstd",
         utils::compress_zstd(&messagepack).unwrap()
@@ -110,4 +110,13 @@ fn bench() {
         compress_deflate(&messagepack).unwrap()
     );
     iprint!("Bincode deflate", compress_deflate(&bincode).unwrap());
+
+    println!();
+
+    let decoded = iprint!(
+        "Daletpack decode",
+        Decoder::new(&daletpack).unwrap().decode().unwrap().data
+    );
+
+    println!("{:#?}", decoded);
 }
