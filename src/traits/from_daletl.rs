@@ -75,7 +75,7 @@ impl TryFrom<DlArgument> for TNArg {
 
     fn try_from(value: DlArgument) -> Result<Self, Self::Error> {
         match value {
-            DlArgument::Text(t) => Ok(TNArg::Text(t.into())),
+            DlArgument::Text(t) => Ok(TNArg::Text(t)),
             DlArgument::Null => Ok(TNArg::Null),
             _ => Err(ConversionError),
         }

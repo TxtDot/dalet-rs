@@ -3,8 +3,8 @@ use crate::daletl::{DlArgument, DlBody, DlPage, DlTag, DlTid, IsNull};
 use super::{utils, DaletPackError, TypeId};
 
 pub fn encode(page: &DlPage) -> Result<Vec<u8>, DaletPackError> {
-    Ok(utils::compress_zstd(&encode_no_compress(page)?)
-        .map_err(|_| DaletPackError::ZstdCompressError)?)
+    utils::compress_zstd(&encode_no_compress(page)?)
+        .map_err(|_| DaletPackError::ZstdCompressError)
 }
 
 pub fn encode_no_compress(page: &DlPage) -> Result<Vec<u8>, DaletPackError> {

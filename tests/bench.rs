@@ -17,15 +17,15 @@ macro_rules! iprint {
     }};
 }
 
-pub fn compress_deflate(data: &Vec<u8>) -> std::io::Result<Vec<u8>> {
+pub fn compress_deflate(data: &[u8]) -> std::io::Result<Vec<u8>> {
     let mut c = flate2::write::DeflateEncoder::new(Vec::new(), Compression::default());
-    c.write(data)?;
+    c.write_all(data)?;
     c.finish()
 }
 
-pub fn compress_zlib(data: &Vec<u8>) -> std::io::Result<Vec<u8>> {
+pub fn compress_zlib(data: &[u8]) -> std::io::Result<Vec<u8>> {
     let mut c = flate2::write::ZlibEncoder::new(Vec::new(), Compression::default());
-    c.write(data)?;
+    c.write_all(data)?;
     c.finish()
 }
 

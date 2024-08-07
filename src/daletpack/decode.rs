@@ -1,5 +1,3 @@
-use std::u32::MAX;
-
 use crate::daletl::{DlArgument, DlBody, DlPage, DlTag, DlTid};
 
 use super::{utils, DaletPackDecodeError, TypeId};
@@ -20,7 +18,7 @@ impl<'a> Decoder<'a> {
     pub fn decode(&mut self) -> Result<DlPage, DaletPackDecodeError> {
         let mut array: Vec<DlTag> = Vec::new();
 
-        for _ in 0..MAX {
+        for _ in 0..u32::MAX {
             let typeid = self.data.next();
 
             match typeid {
@@ -88,7 +86,7 @@ impl<'a> Decoder<'a> {
     fn read_text(&mut self) -> Result<String, DaletPackDecodeError> {
         let mut str = String::new();
 
-        for _ in 0..MAX {
+        for _ in 0..u32::MAX {
             let val = self
                 .data
                 .next()
@@ -107,7 +105,7 @@ impl<'a> Decoder<'a> {
     fn read_tag_array(&mut self) -> Result<Vec<DlTag>, DaletPackDecodeError> {
         let mut array = Vec::new();
 
-        for _ in 0..MAX {
+        for _ in 0..u32::MAX {
             let typeid: TypeId = self
                 .data
                 .next()

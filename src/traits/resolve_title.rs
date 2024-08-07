@@ -24,10 +24,9 @@ fn resolve_from_tags(tags: &Vec<Tag>) -> Option<String> {
                 }
             }
 
-            Block(body, _) => match body {
-                NNBody::Tags(tags) => return resolve_from_tags(tags),
-                _ => {}
-            },
+            Block(NNBody::Tags(tags), _) => {
+                return resolve_from_tags(tags);
+            }
 
             _ => {}
         };

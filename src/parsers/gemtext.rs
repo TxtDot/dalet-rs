@@ -33,7 +33,7 @@ pub fn parse_gemtext(s: &str) -> Result<Page, GemTextParseError> {
 
             match body.next() {
                 Some(label) => page.push(P(
-                    vec![Navlink(label.trim().into(), url.into()).into()].into()
+                    vec![Navlink(label.trim().into(), url.into())].into()
                 )),
                 None => page.push(P(vec![Navlink(Body::Null, url.into())].into())),
             };
