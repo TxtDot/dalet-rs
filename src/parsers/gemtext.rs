@@ -1,5 +1,5 @@
 use crate::typed::{
-    Body, Hl, TNArg,
+    Body, Hl, Page, TNArg,
     Tag::{self, *},
 };
 
@@ -8,7 +8,7 @@ pub enum GemTextParseError {
     InvalidLink,
 }
 
-pub fn parse_gemtext(s: &str) -> Result<Vec<Tag>, GemTextParseError> {
+pub fn parse_gemtext(s: &str) -> Result<Page, GemTextParseError> {
     let mut page: Vec<Tag> = Vec::new();
     let mut preformatted = false;
     let mut preformatted_text: Vec<String> = Vec::new();
@@ -65,5 +65,5 @@ pub fn parse_gemtext(s: &str) -> Result<Vec<Tag>, GemTextParseError> {
         }
     }
 
-    Ok(page)
+    Ok(Page { data: page })
 }
