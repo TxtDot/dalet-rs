@@ -37,10 +37,11 @@ impl TryFrom<DlTag> for Tag {
             DlTid::Sup => Sup(tag.body.try_into()?),
             DlTid::Sub => Sub(tag.body.try_into()?),
             DlTid::Disc => Disc(tag.body.try_into()?),
-            DlTid::Bl => Bl(tag.body.try_into()?, tag.argument.try_into()?),
+            DlTid::Block => Block(tag.body.try_into()?, tag.argument.try_into()?),
             DlTid::Carousel => Carousel(tag.body.try_into()?),
             DlTid::Code => Code(tag.body.try_into()?, tag.argument.try_into()?),
             DlTid::Pre => Pre(tag.body.try_into()?),
+            DlTid::Meta => Meta(tag.body.try_into()?, tag.argument.try_into()?),
         };
 
         Ok(result)

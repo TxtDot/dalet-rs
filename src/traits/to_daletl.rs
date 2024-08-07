@@ -32,10 +32,11 @@ impl From<Tag> for DlTag {
             Tag::Sup(b) => dlt_new(DlTid::Sup, b.into(), NA),
             Tag::Sub(b) => dlt_new(DlTid::Sub, b.into(), NA),
             Tag::Disc(b) => dlt_new(DlTid::Disc, b.into(), NA),
-            Tag::Bl(b, a) => dlt_new(DlTid::Bl, b.into(), a.into()),
+            Tag::Block(b, a) => dlt_new(DlTid::Block, b.into(), a.into()),
             Tag::Carousel(b) => dlt_new(DlTid::Carousel, b.into(), NA),
             Tag::Code(b, a) => dlt_new(DlTid::Code, b.into(), a.into()),
             Tag::Pre(b) => dlt_new(DlTid::Pre, b.into(), NA),
+            Tag::Meta(b, a) => dlt_new(DlTid::Meta, b.into(), a.into()),
         }
     }
 }

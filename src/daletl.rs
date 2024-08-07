@@ -73,10 +73,11 @@ pub enum DlTid {
     Sup,
     Sub,
     Disc,
-    Bl,
+    Block,
     Carousel,
     Code,
     Pre,
+    Meta,
 }
 
 pub trait IsNull {

@@ -42,10 +42,11 @@ pub enum Tag {
     Sup(TBody),
     Sub(TBody),
     Disc(NNBody),
-    Bl(NNBody, AlignArg),
+    Block(NNBody, AlignArg),
     Carousel(Vec<Tag>),
     Code(TBody, TNArg),
     Pre(TBody),
+    Meta(TBody, TArg),
 }
 
 #[derive(AutoFrom, Debug, Clone, PartialEq, Eq)]
@@ -105,4 +106,8 @@ pub enum Hl {
     Four,
     Five,
     Six,
+}
+
+pub trait ResolveTitle {
+    fn resolve_title(&self) -> Option<&String>;
 }
