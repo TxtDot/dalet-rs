@@ -109,5 +109,5 @@ pub enum Hl {
 }
 
 pub trait ResolveTitle {
-    fn resolve_title(&self) -> Option<&String>;
+    fn resolve_title(&self) -> Option<String>;
 }
