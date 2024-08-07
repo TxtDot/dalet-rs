@@ -1,10 +1,11 @@
 use chumsky::prelude::*;
 
 pub type Span = SimpleSpan<usize>;
+pub type Spanned<T> = (T, Span);
 
 #[derive(Clone, Debug, PartialEq)]
 pub enum Token<'src> {
-    // Brackets
+    // Symbols
     /// (
     LParen,
     /// )
@@ -17,6 +18,8 @@ pub enum Token<'src> {
     LSquare,
     /// ]
     RSquare,
+    /// :
+    Colon,
 
     // Values
     Number(u8),
@@ -27,6 +30,9 @@ pub enum Token<'src> {
     MLMSText(usize, &'src str),
     /// Raw Multi line text
     RMLText(&'src str),
+
+    /// Special
+    Comment(&'src str),
 
     // Tags
     El,
