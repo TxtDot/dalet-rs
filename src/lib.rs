@@ -12,3 +12,6 @@ pub mod daletpack;
 
 #[cfg(feature = "parsers")]
 pub mod parsers;
+
+#[cfg(feature = "daleth")]
+pub mod daleth;
