@@ -29,8 +29,7 @@ pub fn compress_zlib(data: &[u8]) -> std::io::Result<Vec<u8>> {
     c.finish()
 }
 
-#[test]
-fn bench() {
+fn main() {
     let page = vec![
         H("Heading 1".into(), Hl::One),
         H("Heading 2".into(), Hl::Two),

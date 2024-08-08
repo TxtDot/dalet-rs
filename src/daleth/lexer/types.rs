@@ -7,23 +7,22 @@ pub type Spanned<T> = (T, Span);
 pub enum Token<'src> {
     // Symbols
     /// (
-    LParen,
+    // LParen,
     /// )
-    RParen,
-    /// {
-    LAngle,
-    /// }
-    RAngle,
+    // RParen,
     /// [
     LSquare,
     /// ]
     RSquare,
     /// :
-    Colon,
+    // Colon,
 
-    // Values
-    Number(u8),
-    Text(&'src str),
+    // Arguments
+    NumberArgument(u8),
+    TextArgument(&'src str),
+
+    // Body
+    TextBody(&'src str),
     /// Multi Line text
     MLText(&'src str),
     /// Multi Line with min spaces text
@@ -33,6 +32,7 @@ pub enum Token<'src> {
 
     /// Special
     Comment(&'src str),
+    TextTag(&'src str),
 
     // Tags
     El,
@@ -66,4 +66,10 @@ pub enum Token<'src> {
     Code,
     Pre,
     Meta,
+}
+
+#[derive(Clone, Debug, PartialEq)]
+pub enum Argument<'src> {
+    Number(u8),
+    Argument(&'src str),
 }
