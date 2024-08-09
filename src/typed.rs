@@ -44,7 +44,7 @@ pub enum Tag {
     Disc(NNBody),
     Block(NNBody, AlignArg),
     Carousel(Vec<Tag>),
-    Code(TBody, TNArg),
+    Code(TBody, TNullArg),
     Pre(TBody),
     Meta(TBody, TArg),
 }
@@ -73,7 +73,7 @@ pub enum Arg {
 }
 
 #[derive(AutoFrom, Debug, Clone, PartialEq, Eq)]
-pub enum TNArg {
+pub enum TNullArg {
     Text(String),
     Null,
 }

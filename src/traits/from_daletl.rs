@@ -70,13 +70,13 @@ impl TryFrom<DlArgument> for AlignArg {
     }
 }
 
-impl TryFrom<DlArgument> for TNArg {
+impl TryFrom<DlArgument> for TNullArg {
     type Error = ConversionError;
 
     fn try_from(value: DlArgument) -> Result<Self, Self::Error> {
         match value {
-            DlArgument::Text(t) => Ok(TNArg::Text(t)),
-            DlArgument::Null => Ok(TNArg::Null),
+            DlArgument::Text(t) => Ok(TNullArg::Text(t)),
+            DlArgument::Null => Ok(TNullArg::Null),
             _ => Err(ConversionError),
         }
     }

@@ -6,16 +6,14 @@ pub type Spanned<T> = (T, Span);
 #[derive(Clone, Debug, PartialEq)]
 pub enum Token<'src> {
     // Symbols
-    /// (
-    // LParen,
-    /// )
-    // RParen,
     /// [
     LSquare,
     /// ]
     RSquare,
-    /// :
-    // Colon,
+    /// [[
+    ElOpen,
+    /// ]]
+    ElClose,
 
     // Arguments
     NumberArgument(u8),
@@ -31,8 +29,12 @@ pub enum Token<'src> {
     RMLText(&'src str),
 
     /// Special
-    Comment(&'src str),
     TextTag(&'src str),
+    Paragraph(&'src str),
+
+    /// Special removed before parse
+    Comment(&'src str),
+    EmptyLine,
 
     // Tags
     El,
@@ -68,8 +70,8 @@ pub enum Token<'src> {
     Meta,
 }
 
-#[derive(Clone, Debug, PartialEq)]
-pub enum Argument<'src> {
-    Number(u8),
-    Argument(&'src str),
+impl<'src> From<Spanned<Token<'src>>> for Token<'src> {
+    fn from(value: Spanned<Token<'src>>) -> Self {
+        value.0
+    }
 }

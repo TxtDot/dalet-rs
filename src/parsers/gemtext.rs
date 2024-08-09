@@ -1,5 +1,5 @@
 use crate::typed::{
-    Body, Hl, Page, TNArg,
+    Body, Hl, Page, TNullArg,
     Tag::{self, *},
 };
 
@@ -32,9 +32,7 @@ pub fn parse_gemtext(s: &str) -> Result<Page, GemTextParseError> {
             let url = body.next().ok_or(GemTextParseError::InvalidLink)?.trim();
 
             match body.next() {
-                Some(label) => page.push(P(
-                    vec![Navlink(label.trim().into(), url.into())].into()
-                )),
+                Some(label) => page.push(P(vec![Navlink(label.trim().into(), url.into())].into())),
                 None => page.push(P(vec![Navlink(Body::Null, url.into())].into())),
             };
         } else if line.starts_with("# ") {
@@ -55,7 +53,7 @@ pub fn parse_gemtext(s: &str) -> Result<Page, GemTextParseError> {
             page.push(Bq(body.into()));
         } else if line.starts_with("```") {
             if preformatted {
-                page.push(Code(preformatted_text.join("\n"), TNArg::Null));
+                page.push(Code(preformatted_text.join("\n"), TNullArg::Null));
                 preformatted_text.clear();
             }
 

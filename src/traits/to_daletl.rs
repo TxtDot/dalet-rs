@@ -64,11 +64,11 @@ impl From<AlignArg> for DlArgument {
     }
 }
 
-impl From<TNArg> for DlArgument {
-    fn from(item: TNArg) -> DlArgument {
+impl From<TNullArg> for DlArgument {
+    fn from(item: TNullArg) -> DlArgument {
         match item {
-            TNArg::Text(s) => s.into(),
-            TNArg::Null => NA,
+            TNullArg::Text(s) => s.into(),
+            TNullArg::Null => NA,
         }
     }
 }

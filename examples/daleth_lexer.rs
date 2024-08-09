@@ -1,6 +1,6 @@
 use ariadne::{Color, Label, Report, ReportKind, Source};
 use chumsky::Parser;
-use dalet::daleth::lexer::lexer;
+use dalet::daleth::{format::format, lexer::lexer};
 
 fn main() {
     let src_file = "daleth.dlth";
@@ -9,7 +9,10 @@ fn main() {
     let parsed = lexer().parse(src);
 
     match parsed.into_result() {
-        Ok(t) => println!("{:#?}", t),
+        Ok(t) => {
+            println!("{:#?}", t);
+            println!("{}", format(&t));
+        }
         Err(e) => e.into_iter().for_each(|e| {
             Report::build(ReportKind::Error, src_file, e.span().start)
                 .with_code("Compiler")
@@ -23,5 +26,5 @@ fn main() {
                 .print((src_file, Source::from(&src)))
                 .unwrap()
         }),
-    }
+    };
 }

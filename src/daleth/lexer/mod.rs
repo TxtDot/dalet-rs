@@ -42,11 +42,10 @@ pub fn lexer<'src>(
     .labelled("Tag");
 
     let symbol = choice((
-        // just("(").to(Token::LParen).labelled("("),
-        // just(")").to(Token::RParen).labelled(")"),
+        just("[[").to(Token::ElOpen).labelled("[["),
+        just("]]").to(Token::ElClose).labelled("]]"),
         just("[").to(Token::LSquare).labelled("["),
         just("]").to(Token::RSquare).labelled("]"),
-        // just(":").to(Token::Colon).labelled(":"),
     ));
 
     let argument = {
@@ -64,7 +63,7 @@ pub fn lexer<'src>(
             .or(arg_escape)
             .repeated()
             .to_slice()
-            .delimited_by(just("\""), just("\""))
+            .delimited_by(just('"'), just('"'))
             .map(Token::TextArgument)
             .labelled("Text argument");
 
@@ -78,8 +77,8 @@ pub fn lexer<'src>(
 
         let text = none_of("\n").repeated().to_slice();
 
-        let text_body = text
-            .delimited_by(just(':'), just('\n'))
+        let text_body = just(':')
+            .ignore_then(text)
             .map(Token::TextBody)
             .labelled("One line text body");
 
@@ -93,15 +92,12 @@ pub fn lexer<'src>(
             .repeated()
             .labelled("Body of multiline text");
 
-        let mlms_n = just("{~")
-            .ignore_then(text::int(10).from_str().unwrapped())
-            .labelled("Minimum spaces number");
-
-        let mlmstext = mlms_n
-            .then(multiline_text_body.clone().to_slice())
-            .then_ignore(just("}"))
-            .map(|(n, t)| Token::MLMSText(n, t))
-            .labelled("Multi line text with min spaces");
+        let paragraph = multiline_text_body
+            .clone()
+            .to_slice()
+            .delimited_by(just("{-"), just("}"))
+            .map(Token::Paragraph)
+            .labelled("Paragraph syntax");
 
         let mltext = multiline_text_body
             .clone()
@@ -110,26 +106,40 @@ pub fn lexer<'src>(
             .map(Token::MLText)
             .labelled("Multiline text");
 
+        let mlmstext = {
+            let mlms_n = just("{~")
+                .ignore_then(text::int(10).from_str().unwrapped())
+                .labelled("Minimum spaces number");
+
+            mlms_n
+                .then(multiline_text_body.clone().to_slice())
+                .then_ignore(just("}"))
+                .map(|(n, t)| Token::MLMSText(n, t))
+                .labelled("Multi line text with min spaces")
+        };
+
         let rmltext = multiline_text_body
             .to_slice()
             .delimited_by(just("{#"), just('}'))
             .map(Token::RMLText)
             .labelled("Raw multiline text");
 
-        choice((mlmstext, mltext, rmltext, text_body, text_tag))
+        choice((paragraph, mlmstext, rmltext, mltext, text_body, text_tag))
     };
 
-    let comment = none_of("\n")
-        .repeated()
-        .to_slice()
-        .delimited_by(just('#'), just('\n'))
+    let comment = just('#')
+        .ignore_then(none_of("\n").repeated().to_slice())
         .map(Token::Comment);
 
-    let token = choice((comment, symbol, tag, argument, textual));
+    let empty_line = text::inline_whitespace()
+        .delimited_by(text::newline(), text::newline())
+        .to(Token::EmptyLine);
+
+    let token = choice((empty_line.clone(), comment, symbol, tag, argument, textual));
 
     token
+        .padded_by(text::whitespace().and_is(empty_line.not()).or_not())
         .map_with(|t, e| (t, e.span()))
-        .padded()
         .repeated()
         .collect()
 }

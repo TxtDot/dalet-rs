@@ -1,6 +1,6 @@
 use dalet::{
     daletpack::*,
-    typed::{Hl, TNArg, Tag::*},
+    typed::{Hl, TNullArg, Tag::*},
 };
 use flate2::Compression;
 use std::io::Write;
@@ -41,7 +41,7 @@ fn main() {
         ]
         .into()),
         Br,
-        Code("Hello world".into(), TNArg::Null),
+        Code("Hello world".into(), TNullArg::Null),
         Br,
         Ul(vec![
             El("abc".into()),
