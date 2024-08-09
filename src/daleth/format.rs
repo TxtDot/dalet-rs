@@ -3,39 +3,51 @@ use super::{
     utils::set_indent,
 };
 
-fn nl_needed<'src>(
+fn additional_str<'src>(
     last2: Option<&Token<'src>>,
     last1: Option<&Token<'src>>,
     current: &Token<'src>,
-) -> bool {
+) -> &'src str {
     if let Some(last1) = last1 {
         // No body, no arg
         if [Token::Br, Token::Hr].contains(last1) {
-            return true;
+            return "\n";
         }
+
+        match current {
+            Token::NumberArgument(_) => {
+                if let Token::H = last1 {
+                    return "";
+                } else {
+                    return " ";
+                }
+            }
+
+            _ => {}
+        };
 
         if let Some(last2) = last2 {
             // No body, with arg
             if [Token::Img, Token::Footlnk, Token::A].contains(last2) {
-                return true;
+                return "\n";
             }
 
             // Optional body
             if [Token::Link, Token::Navlink, Token::Btn, Token::Navbtn].contains(last2) {
                 return match current {
-                    Token::LSquare => false,
-                    Token::TextBody(_) => false,
-                    Token::MLText(_) => false,
-                    Token::MLMSText(_, _) => false,
-                    Token::RMLText(_) => false,
+                    Token::LSquare => "",
+                    Token::TextBody(_) => "",
+                    Token::MLText(_) => "",
+                    Token::MLMSText(_, _) => "",
+                    Token::RMLText(_) => "",
 
-                    _ => true,
+                    _ => "\n",
                 };
             }
         }
     }
 
-    false
+    ""
 }
 
 pub fn format<'src>(spanned_tokens: &Vec<Spanned<Token<'src>>>) -> String {
@@ -62,9 +74,7 @@ pub fn format<'src>(spanned_tokens: &Vec<Spanned<Token<'src>>>) -> String {
 
         let current_token = &spanned_tokens[i].0;
 
-        if nl_needed(last2, last1, current_token) {
-            formatted.push_str("\n");
-        };
+        formatted.push_str(additional_str(last2, last1, current_token));
 
         let to_push = match current_token {
             Token::LSquare => {
