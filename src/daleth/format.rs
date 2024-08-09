@@ -16,7 +16,7 @@ fn additional_str<'src>(
 
         match current {
             Token::NumberArgument(_) => {
-                if let Token::H = last1 {
+                if [Token::H, Token::A].contains(last1) {
                     return "";
                 } else {
                     return " ";
