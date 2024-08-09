@@ -3,19 +3,34 @@ use super::{
     utils::set_indent,
 };
 
-fn nl_needed<'src>(last2: Option<&Token<'src>>, last1: Option<&Token<'src>>) -> bool {
+fn nl_needed<'src>(
+    last2: Option<&Token<'src>>,
+    last1: Option<&Token<'src>>,
+    current: &Token<'src>,
+) -> bool {
     if let Some(last1) = last1 {
-        if *last1 == Token::Br {
-            return true;
-        }
-
-        if *last1 == Token::Hr {
+        // No body, no arg
+        if [Token::Br, Token::Hr].contains(last1) {
             return true;
         }
 
         if let Some(last2) = last2 {
-            if *last2 == Token::Img {
+            // No body, with arg
+            if [Token::Img, Token::Footlnk, Token::A].contains(last2) {
                 return true;
+            }
+
+            // Optional body
+            if [Token::Link, Token::Navlink, Token::Btn, Token::Navbtn].contains(last2) {
+                return match current {
+                    Token::LSquare => false,
+                    Token::TextBody(_) => false,
+                    Token::MLText(_) => false,
+                    Token::MLMSText(_, _) => false,
+                    Token::RMLText(_) => false,
+
+                    _ => true,
+                };
             }
         }
     }
@@ -45,13 +60,13 @@ pub fn format<'src>(spanned_tokens: &Vec<Spanned<Token<'src>>>) -> String {
             }
         };
 
-        if nl_needed(last2, last1) {
+        let current_token = &spanned_tokens[i].0;
+
+        if nl_needed(last2, last1, current_token) {
             formatted.push_str("\n");
         };
 
-        let spanned_token = &spanned_tokens[i].0;
-
-        let to_push = match spanned_token {
+        let to_push = match current_token {
             Token::LSquare => {
                 current_indent += 1;
                 " [\n".to_owned()
@@ -75,7 +90,7 @@ pub fn format<'src>(spanned_tokens: &Vec<Spanned<Token<'src>>>) -> String {
                 set_indent("}", current_indent)
             ),
             Token::RMLText(t) => format!(" {{#{t}}}\n"),
-            Token::Comment(c) => format!("{}\n", set_indent(&format!("# {c}"), current_indent)),
+            Token::Comment(c) => format!("{}\n", set_indent(&format!("#{c}"), current_indent)),
 
             Token::TextTag(t) => format!("{}\n", set_indent(t, current_indent)),
 
