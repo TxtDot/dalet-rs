@@ -28,11 +28,11 @@ pub enum Token<'src> {
     /// Raw Multi line text
     RMLText(&'src str),
 
-    /// Special
+    // Special
     TextTag(&'src str),
     Paragraph(&'src str),
 
-    /// Special removed before parse
+    // Special for formatting, ignored for parse
     Comment(&'src str),
     EmptyLine,
 

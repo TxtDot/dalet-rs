@@ -4,7 +4,7 @@ use ariadne::{Color, Label, Report, ReportKind, Source};
 use chumsky::Parser;
 use clap::Parser as ClapParser;
 use commands::{Cli, Commands::*};
-use dalet::daleth::{format::format, lexer::lexer};
+use dalet::daleth::{format::format, lexer::full_lexer};
 use std::fs;
 
 fn main() {
@@ -16,7 +16,7 @@ fn main() {
             let src_file = &path.to_string_lossy().to_string();
             let src = fs::read_to_string(src_file).unwrap();
 
-            let parsed = lexer().parse(&src);
+            let parsed = full_lexer().parse(&src);
 
             match parsed.into_result() {
                 Ok(t) => {

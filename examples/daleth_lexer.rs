@@ -1,12 +1,12 @@
 use ariadne::{Color, Label, Report, ReportKind, Source};
 use chumsky::Parser;
-use dalet::daleth::{format::format, lexer::lexer};
+use dalet::daleth::{format::format, lexer::full_lexer};
 
 fn main() {
     let src_file = "daleth.dlth";
     let src = include_str!("./daleth.dlth");
 
-    let parsed = lexer().parse(src);
+    let parsed = full_lexer().parse(src);
 
     match parsed.into_result() {
         Ok(t) => {

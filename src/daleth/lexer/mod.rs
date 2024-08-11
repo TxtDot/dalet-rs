@@ -4,7 +4,36 @@ pub mod types;
 
 pub fn lexer<'src>(
 ) -> impl Parser<'src, &'src str, Vec<Spanned<Token<'src>>>, extra::Err<Rich<'src, char, Span>>> {
-    let tag = choice((
+    let token = choice((symbol(), tag(), argument(), textual()));
+
+    token
+        .padded()
+        .padded_by(comment())
+        .map_with(|t, e| (t, e.span()))
+        .repeated()
+        .collect()
+}
+
+pub fn full_lexer<'src>(
+) -> impl Parser<'src, &'src str, Vec<Spanned<Token<'src>>>, extra::Err<Rich<'src, char, Span>>> {
+    let token = choice((
+        empty_line(),
+        comment(),
+        symbol(),
+        tag(),
+        argument(),
+        textual(),
+    ));
+
+    token
+        .padded_by(text::whitespace().and_is(empty_line().not()).or_not())
+        .map_with(|t, e| (t, e.span()))
+        .repeated()
+        .collect()
+}
+
+fn tag<'src>() -> impl Parser<'src, &'src str, Token<'src>, extra::Err<Rich<'src, char, Span>>> {
+    choice((
         just("el").to(Token::El),
         just("h").to(Token::H),
         just("p").to(Token::P),
@@ -39,108 +68,109 @@ pub fn lexer<'src>(
         just("pre").to(Token::Pre),
         just("meta").to(Token::Meta),
     )))
-    .labelled("Tag");
+    .labelled("Tag")
+}
 
-    let symbol = choice((
+fn symbol<'src>() -> impl Parser<'src, &'src str, Token<'src>, extra::Err<Rich<'src, char, Span>>> {
+    choice((
         just("[[").to(Token::ElOpen).labelled("[["),
         just("]]").to(Token::ElClose).labelled("]]"),
         just("[").to(Token::LSquare).labelled("["),
         just("]").to(Token::RSquare).labelled("]"),
-    ));
+    ))
+}
 
-    let argument = {
-        let arg_escape = just('\\')
-            .ignore_then(just('"'))
-            .labelled("Escape sequence for argument");
+fn argument<'src>() -> impl Parser<'src, &'src str, Token<'src>, extra::Err<Rich<'src, char, Span>>>
+{
+    let arg_escape = just('\\')
+        .ignore_then(just('"'))
+        .labelled("Escape sequence for argument");
 
-        let number = text::int(10)
-            .from_str()
-            .unwrapped()
-            .map(Token::NumberArgument)
-            .labelled("Number argument");
+    let number = text::int(10)
+        .from_str()
+        .unwrapped()
+        .map(Token::NumberArgument)
+        .labelled("Number argument");
 
-        let text_argument = none_of("\"\n\\")
-            .or(arg_escape)
-            .repeated()
-            .to_slice()
-            .delimited_by(just('"'), just('"'))
-            .map(Token::TextArgument)
-            .labelled("Text argument");
-
-        choice((number, text_argument))
-    };
-
-    let textual = {
-        let escape = just('\\')
-            .ignore_then(just('}'))
-            .labelled("Multi-line escape sequence");
-
-        let text = none_of("\n")
-            .repeated()
-            .to_slice()
-            .padded_by(text::inline_whitespace());
-
-        let text_body = just(':')
-            .ignore_then(text)
-            .map(Token::TextBody)
-            .labelled("One line text body");
-
-        let text_tag = text
-            .then_ignore(just('\n'))
-            .map(Token::TextTag)
-            .labelled("Text tag");
-
-        let multiline_text_body = none_of("}\\")
-            .or(escape)
-            .repeated()
-            .to_slice()
-            .labelled("Body of multiline text");
-
-        let paragraph = multiline_text_body
-            .clone()
-            .delimited_by(just("{-"), just("}"))
-            .map(Token::Paragraph)
-            .labelled("Paragraph syntax");
-
-        let mltext = multiline_text_body
-            .clone()
-            .delimited_by(just('{'), just('}'))
-            .map(Token::MLText)
-            .labelled("Multiline text");
-
-        let mlmstext = {
-            let mlms_n = just("{~")
-                .ignore_then(text::int(10).from_str().unwrapped())
-                .labelled("Minimum spaces number");
-
-            mlms_n
-                .then(multiline_text_body.clone())
-                .then_ignore(just("}"))
-                .map(|(n, t)| Token::MLMSText(n, t))
-                .labelled("Multi line text with min spaces")
-        };
-
-        let rmltext = multiline_text_body
-            .delimited_by(just("{#"), just('}'))
-            .map(Token::RMLText)
-            .labelled("Raw multiline text");
-
-        choice((paragraph, mlmstext, rmltext, mltext, text_body, text_tag))
-    };
-
-    let comment = just('#')
-        .ignore_then(none_of("\n").repeated().to_slice())
-        .map(Token::Comment);
-
-    let empty_line = text::inline_whitespace()
-        .delimited_by(text::newline(), text::newline())
-        .to(Token::EmptyLine);
-
-    let token = choice((empty_line.clone(), comment, symbol, tag, argument, textual));
-
-    token
-        .padded_by(text::whitespace().and_is(empty_line.not()).or_not())
-        .map_with(|t, e| (t, e.span()))
+    let text_argument = none_of("\"\n\\")
+        .or(arg_escape)
         .repeated()
-        .collect()
+        .to_slice()
+        .delimited_by(just('"'), just('"'))
+        .map(Token::TextArgument)
+        .labelled("Text argument");
+
+    choice((number, text_argument))
+}
+
+fn textual<'src>() -> impl Parser<'src, &'src str, Token<'src>, extra::Err<Rich<'src, char, Span>>>
+{
+    let escape = just('\\')
+        .ignore_then(just('}'))
+        .labelled("Multi-line escape sequence");
+
+    let text = none_of("\n")
+        .repeated()
+        .to_slice()
+        .padded_by(text::inline_whitespace());
+
+    let text_body = just(':')
+        .ignore_then(text)
+        .map(Token::TextBody)
+        .labelled("One line text body");
+
+    let text_tag = text
+        .then_ignore(just('\n'))
+        .map(Token::TextTag)
+        .labelled("Text tag");
+
+    let multiline_text_body = none_of("}\\")
+        .or(escape)
+        .repeated()
+        .to_slice()
+        .labelled("Body of multiline text");
+
+    let paragraph = multiline_text_body
+        .clone()
+        .delimited_by(just("{-"), just("}"))
+        .map(Token::Paragraph)
+        .labelled("Paragraph syntax");
+
+    let mltext = multiline_text_body
+        .clone()
+        .delimited_by(just('{'), just('}'))
+        .map(Token::MLText)
+        .labelled("Multiline text");
+
+    let mlmstext = {
+        let mlms_n = just("{~")
+            .ignore_then(text::int(10).from_str().unwrapped())
+            .labelled("Minimum spaces number");
+
+        mlms_n
+            .then(multiline_text_body.clone())
+            .then_ignore(just("}"))
+            .map(|(n, t)| Token::MLMSText(n, t))
+            .labelled("Multi line text with min spaces")
+    };
+
+    let rmltext = multiline_text_body
+        .delimited_by(just("{#"), just('}'))
+        .map(Token::RMLText)
+        .labelled("Raw multiline text");
+
+    choice((paragraph, mlmstext, rmltext, mltext, text_body, text_tag))
+}
+
+fn comment<'src>() -> impl Parser<'src, &'src str, Token<'src>, extra::Err<Rich<'src, char, Span>>>
+{
+    just('#')
+        .ignore_then(none_of("\n").repeated().to_slice())
+        .map(Token::Comment)
+}
+fn empty_line<'src>(
+) -> impl Parser<'src, &'src str, Token<'src>, extra::Err<Rich<'src, char, Span>>> {
+    text::inline_whitespace()
+        .delimited_by(text::newline(), text::newline())
+        .to(Token::EmptyLine)
 }
