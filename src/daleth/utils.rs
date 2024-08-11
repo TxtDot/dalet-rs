@@ -1,5 +1,5 @@
 pub fn trim_indent(input: &str) -> String {
-    let lines: Vec<&str> = input.lines().collect();
+    let lines: Vec<&str> = trim_unused(input).lines().collect();
 
     // Find the minimum indentation of non-empty lines
     let min_indent = lines
@@ -21,28 +21,36 @@ pub fn trim_indent(input: &str) -> String {
         })
         .collect();
 
-    trim_newline(&trimmed_lines.join("\n")).to_owned()
+    trimmed_lines.join("\n")
 }
 
 pub fn set_indent(input: &str, indent: usize) -> String {
-    prepend_indent(&trim_indent(input), &"    ".repeat(indent))
+    prepend_indent(&trim_indent(input), indent)
 }
 
-fn trim_newline<'a>(s: &'a str) -> &'a str {
+fn trim_unused<'a>(s: &'a str) -> &'a str {
     let mut trim_start = 0;
+    let mut been_newlines = false;
 
     for start_char in s.chars() {
-        if start_char != '\n' && start_char != '\r' {
+        if !been_newlines
+            && (char::is_whitespace(start_char) && start_char != '\n' && start_char != '\r')
+        {
+            trim_start += 1;
+            continue;
+        } else if start_char != '\n' && start_char != '\r' {
             break;
+        } else {
+            been_newlines = true;
+            trim_start += 1;
         }
-
-        trim_start += 1;
     }
 
     &s[(trim_start)..].trim_end()
 }
 
-fn prepend_indent(input: &str, indent: &str) -> String {
+pub fn prepend_indent(input: &str, indent: usize) -> String {
+    let indent = &"    ".repeat(indent);
     let lines: Vec<String> = input
         .lines()
         .map(|line| format!("{}{}", indent, line))

@@ -75,7 +75,10 @@ pub fn lexer<'src>(
             .ignore_then(just('}'))
             .labelled("Multi-line escape sequence");
 
-        let text = none_of("\n").repeated().to_slice();
+        let text = none_of("\n")
+            .repeated()
+            .to_slice()
+            .padded_by(text::inline_whitespace());
 
         let text_body = just(':')
             .ignore_then(text)
@@ -90,18 +93,17 @@ pub fn lexer<'src>(
         let multiline_text_body = none_of("}\\")
             .or(escape)
             .repeated()
+            .to_slice()
             .labelled("Body of multiline text");
 
         let paragraph = multiline_text_body
             .clone()
-            .to_slice()
             .delimited_by(just("{-"), just("}"))
             .map(Token::Paragraph)
             .labelled("Paragraph syntax");
 
         let mltext = multiline_text_body
             .clone()
-            .to_slice()
             .delimited_by(just('{'), just('}'))
             .map(Token::MLText)
             .labelled("Multiline text");
@@ -112,14 +114,13 @@ pub fn lexer<'src>(
                 .labelled("Minimum spaces number");
 
             mlms_n
-                .then(multiline_text_body.clone().to_slice())
+                .then(multiline_text_body.clone())
                 .then_ignore(just("}"))
                 .map(|(n, t)| Token::MLMSText(n, t))
                 .labelled("Multi line text with min spaces")
         };
 
         let rmltext = multiline_text_body
-            .to_slice()
             .delimited_by(just("{#"), just('}'))
             .map(Token::RMLText)
             .labelled("Raw multiline text");

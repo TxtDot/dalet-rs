@@ -40,13 +40,15 @@ This is element
 br
 
 # if no tag is specified but a '{- text}' is present, then the 'p' tag is placed
-# '\n' is deleted in this format. If a break line is needed in a paragraph, use '  \n'.
+# '\n' is replaced with ' ' in this format.
 {-
   Check Dalet too
   This is one paragraph
 }
 
-{- This is another paragraph ({- text\}) }
+{-
+  This is another paragraph ({- text\})
+}
 
 row "center" [
   link "https://github.com/txtdot/txtdot": Homepage
