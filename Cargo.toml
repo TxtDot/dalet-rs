@@ -1,6 +1,6 @@
 [package]
 name = "dalet"
-version = "1.0.0-pre.14"
+version = "1.0.0-pre.15"
 edition = "2021"
 authors = ["artegoser"]
 license = "MIT"
@@ -10,6 +10,10 @@ homepage = "https://github.com/TxtDot/dalet-rs/tree/main/"
 readme = "./README.md"
 keywords = ["dalet"]
 categories = ["compression", "compilers", "encoding"]
+
+[[bin]]
+name = "dalet"
+path = "src/main.rs"
 
 [dependencies]
 clap = { version = "4.5.13", features = ["derive"] }
