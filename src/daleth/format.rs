@@ -1,5 +1,6 @@
 use super::{
-    lexer::types::{Spanned, Token},
+    lexer::types::Token,
+    types::Spanned,
     utils::{prepend_indent, set_indent},
 };
 

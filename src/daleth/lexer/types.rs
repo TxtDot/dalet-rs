@@ -1,8 +1,3 @@
-use chumsky::prelude::*;
-
-pub type Span = SimpleSpan<usize>;
-pub type Spanned<T> = (T, Span);
-
 #[derive(Clone, Debug, PartialEq)]
 pub enum Token<'src> {
     // Symbols
@@ -68,10 +63,4 @@ pub enum Token<'src> {
     Code,
     Pre,
     Meta,
-}
-
-impl<'src> From<Spanned<Token<'src>>> for Token<'src> {
-    fn from(value: Spanned<Token<'src>>) -> Self {
-        value.0
-    }
 }
