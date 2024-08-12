@@ -31,9 +31,9 @@ pub fn tag<'tokens, 'src: 'tokens>(
 
         let text_body = select! {
             Token::TextBody(t) => t.to_owned(),
-            Token::MLText(t) => trim_indent(t).to_owned(),
-            Token::MLMSText(n, t) => set_spaces(t, n).to_owned(),
-            Token::MLRText(t) => t.to_owned()
+            Token::MLText(t) => trim_indent(t).replace("\\}", "}").replace("\\\\", "\\"),
+            Token::MLMSText(n, t) => set_spaces(t, n).replace("\\}", "}").replace("\\\\", "\\"),
+            Token::MLRText(t) => t.replace("\\}", "}").replace("\\\\", "\\")
         }
         .labelled("Text body");
 

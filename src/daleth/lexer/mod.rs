@@ -86,7 +86,7 @@ fn symbol<'src>() -> impl Parser<'src, &'src str, Token<'src>, extra::Err<Rich<'
 fn argument<'src>() -> impl Parser<'src, &'src str, Token<'src>, extra::Err<Rich<'src, char, Span>>>
 {
     let arg_escape = just('\\')
-        .ignore_then(just('"'))
+        .ignore_then(choice((just('"'), just('\\'))))
         .labelled("Escape sequence for argument");
 
     let number = text::int(10)
@@ -109,7 +109,7 @@ fn argument<'src>() -> impl Parser<'src, &'src str, Token<'src>, extra::Err<Rich
 fn textual<'src>() -> impl Parser<'src, &'src str, Token<'src>, extra::Err<Rich<'src, char, Span>>>
 {
     let escape = just('\\')
-        .ignore_then(just('}'))
+        .ignore_then(choice((just('}'), just('\\'))))
         .labelled("Multi-line escape sequence");
 
     let text = none_of("\n")
