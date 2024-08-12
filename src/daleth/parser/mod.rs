@@ -2,19 +2,25 @@ pub mod types;
 
 use super::{
     lexer::types::Token,
-    types::{Span, Spanned},
-    utils::{set_indent, trim_indent},
+    types::Span,
+    utils::{set_spaces, trim_indent},
 };
-use crate::typed::{AlignArg, Body, Hl, NNArg, NNBody, Page, TNullArg, Tag::*};
+use crate::typed::{
+    AlignArg, Body, Hl, NNArg, NNBody, Page, TNullArg,
+    Tag::{self, *},
+};
 use chumsky::prelude::*;
 use types::*;
 
-pub fn parser<'tokens, 'src: 'tokens>() -> impl Parser<
-    'tokens,
-    ParserInput<'tokens, 'src>,
-    Spanned<Page>,
-    extra::Err<Rich<'tokens, Token<'src>, Span>>,
-> {
+pub fn parser<'tokens, 'src: 'tokens>(
+) -> impl Parser<'tokens, ParserInput<'tokens, 'src>, Page, extra::Err<Rich<'tokens, Token<'src>, Span>>>
+{
+    tag().repeated().collect().map(|t| (Page { data: t }))
+}
+
+pub fn tag<'tokens, 'src: 'tokens>(
+) -> impl Parser<'tokens, ParserInput<'tokens, 'src>, Tag, extra::Err<Rich<'tokens, Token<'src>, Span>>>
+{
     recursive(|tag| {
         let tags_body = tag
             .clone()
@@ -25,7 +31,7 @@ pub fn parser<'tokens, 'src: 'tokens>() -> impl Parser<
         let text_body = select! {
             Token::TextBody(t) => t.to_owned(),
             Token::MLText(t) => trim_indent(t).to_owned(),
-            Token::MLMSText(n, t) => set_indent(t, n).to_owned(),
+            Token::MLMSText(n, t) => set_spaces(t, n).to_owned(),
             Token::MLRText(t) => t.to_owned()
         };
 
@@ -53,8 +59,11 @@ pub fn parser<'tokens, 'src: 'tokens>() -> impl Parser<
             .or_not()
             .map(|v| v.unwrap_or(TNullArg::Null));
         let hlarg = num_arg.try_map(|n, s| Hl::try_from(n).map_err(|e| Rich::custom(s, e)));
-        let alignarg =
-            num_arg.try_map(|n, s| AlignArg::try_from(n).map_err(|e| Rich::custom(s, e)));
+        let alignarg = choice((
+            just(Token::TextArgument("start")).to(AlignArg::Start),
+            just(Token::TextArgument("center")).to(AlignArg::Start),
+            just(Token::TextArgument("end")).to(AlignArg::Start),
+        ));
 
         let el = just(Token::El).ignore_then(nnbody.clone()).map(El);
         let h = just(Token::H)
@@ -66,7 +75,7 @@ pub fn parser<'tokens, 'src: 'tokens>() -> impl Parser<
         let ul = just(Token::Ul).ignore_then(tags_body.clone()).map(Ul);
         let ol = just(Token::Ol).ignore_then(tags_body.clone()).map(Ol);
         let row = just(Token::Row)
-            .ignore_then(alignarg.or_not())
+            .ignore_then(alignarg.clone().or_not())
             .then(tags_body.clone())
             .map(|(arg, body)| Row(body, arg.unwrap_or(AlignArg::Start)));
         let link = just(Token::Link)
@@ -141,7 +150,4 @@ pub fn parser<'tokens, 'src: 'tokens>() -> impl Parser<
         .or(choice((block, carousel, code, pre, meta)))
         .or(choice((el_text, el_tags, paragraph)))
     })
-    .repeated()
-    .collect()
-    .map_with(|t, e| (Page { data: t }, e.span()))
 }

@@ -28,6 +28,10 @@ pub fn set_indent(input: &str, indent: usize) -> String {
     prepend_indent(&trim_indent(input), indent)
 }
 
+pub fn set_spaces(input: &str, spaces: usize) -> String {
+    prepend_spaces(&trim_indent(input), spaces)
+}
+
 fn trim_unused<'a>(s: &'a str) -> &'a str {
     let mut trim_start = 0;
     let mut been_newlines = false;
@@ -50,7 +54,11 @@ fn trim_unused<'a>(s: &'a str) -> &'a str {
 }
 
 pub fn prepend_indent(input: &str, indent: usize) -> String {
-    let indent = &"    ".repeat(indent);
+    prepend_spaces(input, indent * 4)
+}
+
+fn prepend_spaces(input: &str, spaces: usize) -> String {
+    let indent = &" ".repeat(spaces);
     let lines: Vec<String> = input
         .lines()
         .map(|line| format!("{}{}", indent, line))

@@ -96,8 +96,8 @@ row [
                 this is codeblock
             }
 
-            # {# Text} Text after "`# " not modified
-            code "markdown" {#     this is codeblock}
+            # {# Text} Text after "{#" not modified
+            code "markdown" {#    this is codeblock}
         ]]
 
         [[
@@ -125,14 +125,14 @@ row [
 #    Element
 #    Description
 #  ]
-table {
-    +| Tag      | Description     |
-     | h        | Heading         |
-     | p        | Paragraph       |
-     | img      | Image           |
-     | link     | Link            |
-     | btn      | Button          |
-     | ul       | Unordered list  |
-     | br       | Line break      |
-    +| quantity | 7               |
-}
+# table {
+#     +| Tag      | Description     |
+#      | h        | Heading         |
+#      | p        | Paragraph       |
+#      | img      | Image           |
+#      | link     | Link            |
+#      | btn      | Button          |
+#      | ul       | Unordered list  |
+#      | br       | Line break      |
+#     +| quantity | 7               |
+# }

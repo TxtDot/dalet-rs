@@ -10,8 +10,8 @@ pub fn lexer<'src>(
     let token = choice((symbol(), tag(), argument(), textual()));
 
     token
+        .padded_by(comment().padded().repeated())
         .padded()
-        .padded_by(comment())
         .map_with(|t, e| (t, e.span()))
         .repeated()
         .collect()
