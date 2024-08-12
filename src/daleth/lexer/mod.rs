@@ -3,7 +3,10 @@ pub mod types;
 use chumsky::prelude::*;
 use types::*;
 
-use super::types::{Span, Spanned};
+use super::{
+    custom_parsers::table_parser,
+    types::{Span, Spanned},
+};
 
 pub fn lexer<'src>(
 ) -> impl Parser<'src, &'src str, Vec<Spanned<Token<'src>>>, extra::Err<Rich<'src, char, Span>>> {
@@ -112,10 +115,7 @@ fn textual<'src>() -> impl Parser<'src, &'src str, Token<'src>, extra::Err<Rich<
         .ignore_then(choice((just('}'), just('\\'))))
         .labelled("Multi-line escape sequence");
 
-    let text = none_of("\n")
-        .repeated()
-        .to_slice()
-        .padded_by(text::inline_whitespace());
+    let text = none_of("\n").repeated().to_slice().map(|s: &str| s.trim());
 
     let text_body = just(':')
         .ignore_then(text)
@@ -138,6 +138,11 @@ fn textual<'src>() -> impl Parser<'src, &'src str, Token<'src>, extra::Err<Rich<
         .delimited_by(just("{-"), just("}"))
         .map(Token::Paragraph)
         .labelled("Paragraph syntax");
+
+    let table_syntax = table_parser()
+        .delimited_by(just("{> table"), just("}"))
+        .map(Token::TableSyntax)
+        .labelled("Table syntax");
 
     let mltext = multiline_text_body
         .clone()
@@ -162,7 +167,15 @@ fn textual<'src>() -> impl Parser<'src, &'src str, Token<'src>, extra::Err<Rich<
         .map(Token::MLRText)
         .labelled("Raw multiline text");
 
-    choice((paragraph, mlmstext, rmltext, mltext, text_body, text_tag))
+    choice((
+        table_syntax,
+        paragraph,
+        mlmstext,
+        rmltext,
+        mltext,
+        text_body,
+        text_tag,
+    ))
 }
 
 fn comment<'src>() -> impl Parser<'src, &'src str, Token<'src>, extra::Err<Rich<'src, char, Span>>>

@@ -1,4 +1,5 @@
 use super::{
+    custom_parsers::table_to_string,
     lexer::types::Token,
     types::Spanned,
     utils::{prepend_indent, set_indent},
@@ -149,6 +150,11 @@ pub fn format<'src>(spanned_tokens: &Vec<Spanned<Token<'src>>>) -> String {
             Token::Paragraph(t) => format!(
                 "{{-\n{}\n{}\n",
                 set_indent(t, current_indent + 1),
+                prepend_indent("}", current_indent)
+            ),
+            Token::TableSyntax(rows) => format!(
+                "{{> table\n{}\n{}\n",
+                set_indent(&table_to_string(rows), current_indent + 1),
                 prepend_indent("}", current_indent)
             ),
 

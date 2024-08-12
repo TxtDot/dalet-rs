@@ -1,5 +1,7 @@
 use core::fmt;
 
+use crate::daleth::custom_parsers::TableCol;
+
 #[derive(Clone, Debug, PartialEq)]
 pub enum Token<'src> {
     // Symbols
@@ -28,6 +30,7 @@ pub enum Token<'src> {
     // Special
     TextTag(&'src str),
     Paragraph(&'src str),
+    TableSyntax(Vec<TableCol<'src>>),
 
     // Special for formatting, ignored for parse
     Comment(&'src str),
@@ -115,6 +118,7 @@ impl<'src> fmt::Display for Token<'src> {
             Token::Code => write!(f, "code"),
             Token::Pre => write!(f, "pre"),
             Token::Meta => write!(f, "meta"),
+            Token::TableSyntax(_) => write!(f, "table syntax"),
         }
     }
 }

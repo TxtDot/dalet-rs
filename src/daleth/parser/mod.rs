@@ -1,6 +1,7 @@
 pub mod types;
 
 use super::{
+    custom_parsers::table_to_tag,
     lexer::types::Token,
     types::Span,
     utils::{set_spaces, trim_indent},
@@ -178,11 +179,15 @@ pub fn tag<'tokens, 'src: 'tokens>(
         }
         .labelled("Paragraph");
 
+        let table_syntax = select! {
+            Token::TableSyntax(rows) => table_to_tag(&rows)
+        };
+
         choice((
             el, h, p, br, ul, ol, row, link, navlink, btn, navbtn, img, table, tcol, tpcol, hr, b,
             i, bq, footlnk, footn, a, s, sup, sub, disc,
         ))
         .or(choice((block, carousel, code, pre, meta)))
-        .or(choice((el_text, el_tags, paragraph)))
+        .or(choice((el_text, el_tags, paragraph, table_syntax)))
     })
 }
