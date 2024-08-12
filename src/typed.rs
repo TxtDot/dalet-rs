@@ -66,13 +66,6 @@ pub enum NNBody {
 pub type TBody = String;
 
 #[derive(AutoFrom, Debug, Clone, PartialEq, Eq)]
-pub enum Arg {
-    Text(String),
-    Number(u8),
-    Null,
-}
-
-#[derive(AutoFrom, Debug, Clone, PartialEq, Eq)]
 pub enum TNullArg {
     Text(String),
     Null,

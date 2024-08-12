@@ -159,7 +159,7 @@ fn textual<'src>() -> impl Parser<'src, &'src str, Token<'src>, extra::Err<Rich<
 
     let rmltext = multiline_text_body
         .delimited_by(just("{#"), just('}'))
-        .map(Token::RMLText)
+        .map(Token::MLRText)
         .labelled("Raw multiline text");
 
     choice((paragraph, mlmstext, rmltext, mltext, text_body, text_tag))

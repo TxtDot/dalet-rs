@@ -20,8 +20,8 @@ pub enum Token<'src> {
     MLText(&'src str),
     /// Multi Line with min spaces text
     MLMSText(usize, &'src str),
-    /// Raw Multi line text
-    RMLText(&'src str),
+    /// Multi Line raw text
+    MLRText(&'src str),
 
     // Special
     TextTag(&'src str),

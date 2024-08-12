@@ -40,7 +40,7 @@ fn additional_str<'src>(
                     Token::TextBody(_) => "",
                     Token::MLText(_) => "",
                     Token::MLMSText(_, _) => "",
-                    Token::RMLText(_) => "",
+                    Token::MLRText(_) => "",
 
                     _ => "\n",
                 };
@@ -100,7 +100,7 @@ pub fn format<'src>(spanned_tokens: &Vec<Spanned<Token<'src>>>) -> String {
                 set_indent(t, current_indent + 1),
                 prepend_indent("}", current_indent)
             ),
-            Token::RMLText(t) => format!(" {{#{t}}}\n"),
+            Token::MLRText(t) => format!(" {{#{t}}}\n"),
             Token::Comment(c) => format!("{}\n", prepend_indent(&format!("#{c}"), current_indent)),
 
             Token::TextTag(t) => format!("{}\n", prepend_indent(t, current_indent)),

@@ -83,16 +83,6 @@ impl From<Body> for DlBody {
     }
 }
 
-impl From<Arg> for DlArgument {
-    fn from(item: Arg) -> DlArgument {
-        match item {
-            Arg::Null => NA,
-            Arg::Number(v) => v.into(),
-            Arg::Text(v) => v.into(),
-        }
-    }
-}
-
 impl From<NNArg> for DlArgument {
     fn from(item: NNArg) -> DlArgument {
         match item {

@@ -109,16 +109,6 @@ impl TryFrom<DlBody> for String {
     }
 }
 
-impl From<DlArgument> for Arg {
-    fn from(value: DlArgument) -> Self {
-        match value {
-            DlArgument::Text(s) => s.into(),
-            DlArgument::Number(n) => n.into(),
-            DlArgument::Null => Self::Null,
-        }
-    }
-}
-
 impl TryFrom<DlArgument> for NNArg {
     type Error = ConversionError;
 
