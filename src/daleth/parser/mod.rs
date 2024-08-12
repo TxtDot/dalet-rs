@@ -26,44 +26,78 @@ pub fn tag<'tokens, 'src: 'tokens>(
             .clone()
             .repeated()
             .collect()
-            .delimited_by(just(Token::LSquare), just(Token::RSquare));
+            .delimited_by(just(Token::LSquare), just(Token::RSquare))
+            .labelled("Tags body");
 
         let text_body = select! {
             Token::TextBody(t) => t.to_owned(),
             Token::MLText(t) => trim_indent(t).to_owned(),
             Token::MLMSText(n, t) => set_spaces(t, n).to_owned(),
             Token::MLRText(t) => t.to_owned()
-        };
+        }
+        .labelled("Text body");
 
         let nnbody = text_body
             .map(NNBody::Text)
-            .or(tags_body.clone().map(NNBody::Tags));
+            .or(tags_body.clone().map(NNBody::Tags))
+            .labelled("Not null body");
 
         let body = text_body
             .map(Body::Text)
             .or(tags_body.clone().map(Body::Tags))
             .or_not()
-            .to(Body::Null);
+            .to(Body::Null)
+            .labelled("Body");
 
         let num_arg = select! {
             Token::NumberArgument(n) => n
-        };
+        }
+        .labelled("Number argument");
 
         let text_arg = select! {
             Token::TextArgument(t) => t.to_owned()
-        };
+        }
+        .labelled("Text argument");
 
-        let nnarg = text_arg.map(NNArg::Text).or(num_arg.map(NNArg::Number));
+        let nnarg = text_arg
+            .map(NNArg::Text)
+            .or(num_arg.map(NNArg::Number))
+            .labelled("Not null argument");
         let tnullarg = text_arg
             .map(TNullArg::Text)
             .or_not()
-            .map(|v| v.unwrap_or(TNullArg::Null));
-        let hlarg = num_arg.try_map(|n, s| Hl::try_from(n).map_err(|e| Rich::custom(s, e)));
-        let alignarg = choice((
-            just(Token::TextArgument("start")).to(AlignArg::Start),
-            just(Token::TextArgument("center")).to(AlignArg::Start),
-            just(Token::TextArgument("end")).to(AlignArg::Start),
-        ));
+            .map(|v| v.unwrap_or(TNullArg::Null))
+            .labelled("Text or null argument");
+
+        let hlarg = num_arg
+            .validate(|n, e, emmiter| match Hl::try_from(n) {
+                Ok(l) => l,
+                Err(_) => {
+                    emmiter.emit(Rich::custom(
+                        e.span(),
+                        "Heading level must be between 1 and 6",
+                    ));
+                    Hl::One
+                }
+            })
+            .labelled("Heading level argument");
+
+        let alignarg = text_arg
+            .clone()
+            .validate(|t, e, emmiter| match t.as_str() {
+                "start" => AlignArg::Start,
+                "center" => AlignArg::Center,
+                "end" => AlignArg::End,
+
+                _ => {
+                    emmiter.emit(Rich::custom(
+                        e.span(),
+                        "Expected 'start', 'center' or 'end'",
+                    ));
+                    AlignArg::Start
+                }
+            })
+            .labelled("Align argument");
 
         let el = just(Token::El).ignore_then(nnbody.clone()).map(El);
         let h = just(Token::H)
@@ -140,8 +174,9 @@ pub fn tag<'tokens, 'src: 'tokens>(
             .map(|v| El(NNBody::Tags(v)));
 
         let paragraph = select! {
-            Token::Paragraph(t) => P(NNBody::Text(t.replace("\n"," ").trim().to_owned()))
-        };
+            Token::Paragraph(t) => P(NNBody::Text(t.replace("\n", " ").trim().to_owned()))
+        }
+        .labelled("Paragraph");
 
         choice((
             el, h, p, br, ul, ol, row, link, navlink, btn, navbtn, img, table, tcol, tpcol, hr, b,

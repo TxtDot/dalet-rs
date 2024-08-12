@@ -1,5 +1,5 @@
 use ariadne::{Color, Label, Report, ReportKind, Source};
-use chumsky::{input::Input, Parser};
+use chumsky::{error::RichReason, input::Input, Parser};
 use dalet::daleth::{lexer::lexer, parser::parser};
 
 fn main() {
@@ -12,16 +12,19 @@ fn main() {
     match parsed.into_result() {
         Ok(t) => {
             println!("{:#?}", t);
-            // println!("{}", format(&t));
         }
         Err(e) => e.into_iter().for_each(|e| {
-            // println!("{:#}", )
+            let msg = match e.reason() {
+                RichReason::Many(errs) => errs[0].to_string(),
+                _ => e.to_string(),
+            };
+
             Report::build(ReportKind::Error, src_file, e.span().start)
                 .with_code("Parser")
                 .with_message(e.to_string())
                 .with_label(
                     Label::new((src_file, e.span().into_range()))
-                        .with_message(e.to_string())
+                        .with_message(&msg)
                         .with_color(Color::Red),
                 )
                 .finish()
