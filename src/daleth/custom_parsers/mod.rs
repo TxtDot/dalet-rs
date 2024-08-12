@@ -16,12 +16,12 @@ pub fn table_to_tag(rows: &Vec<TableCol>) -> Tag {
     Tag::Table(
         rows.into_iter()
             .map(|row| match row {
-                TableCol::Primary(row) => Tag::Tpcol(
+                TableCol::Primary(row) => Tag::Tprow(
                     row.into_iter()
                         .map(|t| Tag::El(NNBody::Text(format!("{t}"))))
                         .collect(),
                 ),
-                TableCol::Secondary(row) => Tag::Tcol(
+                TableCol::Secondary(row) => Tag::Trow(
                     row.into_iter()
                         .map(|t| Tag::El(NNBody::Text(format!("{t}"))))
                         .collect(),

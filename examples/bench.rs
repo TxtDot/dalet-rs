@@ -63,12 +63,12 @@ fn main() {
         ]
         .into()),
         Table(vec![
-            Tpcol(vec![
+            Tprow(vec![
                 El("Col 1".into()),
                 El("Col 2".into()),
                 El("Col 3".into()),
             ]),
-            Tcol(vec![
+            Trow(vec![
                 El("Never gonna".into()),
                 El("give you".into()),
                 El("up".into()),

@@ -131,8 +131,8 @@ pub fn tag<'tokens, 'src: 'tokens>(
             .map(|(arg, body)| Navbtn(body, arg));
         let img = just(Token::Img).ignore_then(text_arg.clone()).map(Img);
         let table = just(Token::Table).ignore_then(tags_body.clone()).map(Table);
-        let tcol = just(Token::Tcol).ignore_then(tags_body.clone()).map(Tcol);
-        let tpcol = just(Token::Tpcol).ignore_then(tags_body.clone()).map(Tpcol);
+        let trow = just(Token::Trow).ignore_then(tags_body.clone()).map(Trow);
+        let tprow = just(Token::Tprow).ignore_then(tags_body.clone()).map(Tprow);
         let hr = just(Token::Hr).to(Hr);
         let b = just(Token::B).ignore_then(text_body.clone()).map(B);
         let i = just(Token::I).ignore_then(text_body.clone()).map(I);
@@ -184,7 +184,7 @@ pub fn tag<'tokens, 'src: 'tokens>(
         };
 
         choice((
-            el, h, p, br, ul, ol, row, link, navlink, btn, navbtn, img, table, tcol, tpcol, hr, b,
+            el, h, p, br, ul, ol, row, link, navlink, btn, navbtn, img, table, trow, tprow, hr, b,
             i, bq, footlnk, footn, a, s, sup, sub, disc,
         ))
         .or(choice((block, carousel, code, pre, meta)))
