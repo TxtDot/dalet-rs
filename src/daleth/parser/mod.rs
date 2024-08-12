@@ -75,7 +75,7 @@ pub fn tag<'tokens, 'src: 'tokens>(
                 Err(_) => {
                     emmiter.emit(Rich::custom(
                         e.span(),
-                        "Heading level must be between 1 and 6",
+                        "Heading level can only take values from 1 to 6",
                     ));
                     Hl::One
                 }
