@@ -157,7 +157,7 @@ pub fn format<'src>(spanned_tokens: &Vec<Spanned<Token<'src>>>) -> String {
             ),
             Token::TableSyntax(rows) => format!(
                 "{}\n{}\n{}\n",
-                prepend_indent("{{> table", current_indent),
+                prepend_indent("{> table", current_indent),
                 set_indent(&table_to_string(rows), current_indent + 1),
                 prepend_indent("}", current_indent)
             ),
