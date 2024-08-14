@@ -168,5 +168,8 @@ pub fn format<'src>(spanned_tokens: &Vec<Spanned<Token<'src>>>) -> String {
         formatted.push_str(&to_push);
     }
 
-    formatted.trim().to_owned()
+    let mut formatted = formatted.trim().to_owned();
+    formatted.push('\n');
+
+    formatted
 }
