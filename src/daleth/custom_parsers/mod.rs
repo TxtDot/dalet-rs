@@ -18,12 +18,22 @@ pub fn table_to_tag(rows: &Vec<TableCol>) -> Tag {
             .map(|row| match row {
                 TableCol::Primary(row) => Tag::Tprow(
                     row.into_iter()
-                        .map(|t| Tag::El(NNBody::Text(format!("{t}"))))
+                        .map(|t| {
+                            Tag::El(NNBody::Text(format!(
+                                "{}",
+                                t.replace("\\]", "]").replace("\\|", "|")
+                            )))
+                        })
                         .collect(),
                 ),
                 TableCol::Secondary(row) => Tag::Trow(
                     row.into_iter()
-                        .map(|t| Tag::El(NNBody::Text(format!("{t}"))))
+                        .map(|t| {
+                            Tag::El(NNBody::Text(format!(
+                                "{}",
+                                t.replace("\\]", "]").replace("\\|", "|")
+                            )))
+                        })
                         .collect(),
                 ),
             })

@@ -104,7 +104,9 @@ pub fn format<'src>(spanned_tokens: &Vec<Spanned<Token<'src>>>) -> String {
             Token::MLRText(t) => format!(" {{#{t}}}\n"),
             Token::Comment(c) => format!("{}\n", prepend_indent(&format!("#{c}"), current_indent)),
 
-            Token::TextTag(t) => format!("{}\n", prepend_indent(t, current_indent)),
+            Token::TextTag(t) => {
+                format!("{}\n", prepend_indent(&format!("- {}", t), current_indent))
+            }
 
             Token::El => prepend_indent("el", current_indent),
             Token::H => prepend_indent("h", current_indent),

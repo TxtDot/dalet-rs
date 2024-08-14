@@ -122,8 +122,8 @@ fn textual<'src>() -> impl Parser<'src, &'src str, Token<'src>, extra::Err<Rich<
         .map(Token::TextBody)
         .labelled("One line text body");
 
-    let text_tag = text
-        .then_ignore(just('\n'))
+    let text_tag = just('-')
+        .ignore_then(text)
         .map(Token::TextTag)
         .labelled("Text tag");
 

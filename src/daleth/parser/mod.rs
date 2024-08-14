@@ -47,7 +47,7 @@ pub fn tag<'tokens, 'src: 'tokens>(
             .map(Body::Text)
             .or(tags_body.clone().map(Body::Tags))
             .or_not()
-            .to(Body::Null)
+            .map(|v| v.unwrap_or(Body::Null))
             .labelled("Body");
 
         let num_arg = select! {
