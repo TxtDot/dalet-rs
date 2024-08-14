@@ -63,7 +63,7 @@ row "center" [
 row [
     # if no tag is specified but a '[[]]' is present, then the 'el' tag
     # with multiple tags body placed
-
+    
     [[
         h2: Features
 
@@ -87,14 +87,9 @@ row [
             h3: Dev
 
             # {} for multiline strings, indent is automatically trimmed
-            code {
+            code "bash" {
                 npm install
                 npm run dev
-            }
-
-            # {~n Text} n is number of minimum spaces
-            code "markdown" {~4
-                this is codeblock
             }
 
             # {# Text} Text after "{#" not modified
@@ -103,7 +98,7 @@ row [
 
         [[
             h3: Production
-            code {
+            code "bash" {
                 npm install
                 npm run build
                 npm run start
@@ -112,7 +107,7 @@ row [
 
         [[
             h3: Docker
-            code: docker compose up -d
+            code "bash": docker compose up -d
         ]]
 
     ]]
