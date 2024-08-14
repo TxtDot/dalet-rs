@@ -150,12 +150,14 @@ pub fn format<'src>(spanned_tokens: &Vec<Spanned<Token<'src>>>) -> String {
                 format!("{}\n", prepend_indent("]]", current_indent))
             }
             Token::Paragraph(t) => format!(
-                "{{-\n{}\n{}\n",
+                "{}\n{}\n{}\n",
+                prepend_indent("{-", current_indent),
                 set_indent(t, current_indent + 1),
                 prepend_indent("}", current_indent)
             ),
             Token::TableSyntax(rows) => format!(
-                "{{> table\n{}\n{}\n",
+                "{}\n{}\n{}\n",
+                prepend_indent("{{> table", current_indent),
                 set_indent(&table_to_string(rows), current_indent + 1),
                 prepend_indent("}", current_indent)
             ),
