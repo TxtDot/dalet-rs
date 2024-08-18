@@ -1,10 +1,9 @@
-use crate::daletl::{DlArgument, DlBody, DlPage, DlTag, DlTid, IsNull};
+use crate::daletl::{DlArgument, DlBody, DlPage, DlTag, DlTid};
 
 use super::{utils, DaletPackError, TypeId};
 
 pub fn encode(page: &DlPage) -> Result<Vec<u8>, DaletPackError> {
-    utils::compress_zstd(&encode_no_compress(page)?)
-        .map_err(|_| DaletPackError::ZstdCompressError)
+    utils::compress_zstd(&encode_no_compress(page)?).map_err(|_| DaletPackError::ZstdCompressError)
 }
 
 pub fn encode_no_compress(page: &DlPage) -> Result<Vec<u8>, DaletPackError> {
@@ -21,11 +20,6 @@ pub fn encode_no_compress(page: &DlPage) -> Result<Vec<u8>, DaletPackError> {
     Ok(bv)
 }
 
-fn write_int(bv: &mut Vec<u8>, n: u8) {
-    bv.push(TypeId::Number as u8);
-    bv.push(n);
-}
-
 fn write_str(bv: &mut Vec<u8>, string: &String) -> Result<(), DaletPackError> {
     let size = string.len();
 
@@ -33,7 +27,6 @@ fn write_str(bv: &mut Vec<u8>, string: &String) -> Result<(), DaletPackError> {
         return Err(DaletPackError::StrMaxSizeExceeded);
     }
 
-    bv.push(TypeId::Text as u8);
     bv.extend_from_slice(string.as_bytes());
     bv.push(TypeId::TextEnd as u8);
 
@@ -45,37 +38,113 @@ fn write_array(bv: &mut Vec<u8>, arr: &Vec<DlTag>) -> Result<(), DaletPackError>
         return Err(DaletPackError::ArrMaxSizeExceeded);
     }
 
-    bv.push(TypeId::Tags as u8);
-
     for tag in arr {
         write_tag(bv, tag)?;
     }
 
-    bv.push(TypeId::TagsEnd as u8);
+    if arr.len() != 1 {
+        bv.push(TypeId::TagsEnd as u8);
+    }
 
     Ok(())
 }
 
 fn write_tag(bv: &mut Vec<u8>, tag: &DlTag) -> Result<(), DaletPackError> {
-    if tag.id == DlTid::El {
-        write_tag_body(bv, &tag.body)?;
-    } else if tag.body.is_null() && tag.argument.is_null() {
-        bv.push(TypeId::TagId as u8);
-        bv.push(tag.id as u8);
-    } else if tag.argument.is_null() {
-        bv.push(TypeId::TagIdBody as u8);
-        bv.push(tag.id as u8);
-        write_tag_body(bv, &tag.body)?;
-    } else if tag.body.is_null() {
-        bv.push(TypeId::TagIdArgument as u8);
-        bv.push(tag.id as u8);
-        write_tag_argument(bv, &tag.argument)?;
-    } else {
-        bv.push(TypeId::TagIdBodyArgument as u8);
-        bv.push(tag.id as u8);
-        write_tag_body(bv, &tag.body)?;
-        write_tag_argument(bv, &tag.argument)?;
-    }
+    // TypeId and TagId if needed
+    match (&tag.body, &tag.argument) {
+        (DlBody::Text(_), DlArgument::Text(_)) => match &tag.id {
+            DlTid::Meta => bv.push(TypeId::Meta as u8),
+            _ => {
+                bv.push(TypeId::CompTextText as u8);
+                bv.push(tag.id as u8);
+            }
+        },
+        (DlBody::Text(_), DlArgument::Number(_)) => {
+            bv.push(TypeId::CompTextNumber as u8);
+            bv.push(tag.id as u8);
+        }
+        (DlBody::Text(_), DlArgument::Null) => match &tag.id {
+            DlTid::El => bv.push(TypeId::ElText as u8),
+            DlTid::P => bv.push(TypeId::PText as u8),
+            DlTid::B => bv.push(TypeId::B as u8),
+            DlTid::I => bv.push(TypeId::I as u8),
+            DlTid::S => bv.push(TypeId::S as u8),
+            DlTid::Sup => bv.push(TypeId::Sup as u8),
+            DlTid::Sub => bv.push(TypeId::Sub as u8),
+
+            _ => {
+                bv.push(TypeId::BodyText as u8);
+                bv.push(tag.id as u8);
+            }
+        },
+        (DlBody::Tags(tags), DlArgument::Text(_)) => {
+            if tags.len() == 1 {
+                bv.push(TypeId::CompTagText as u8);
+            } else {
+                bv.push(TypeId::CompTagsText as u8);
+            }
+
+            bv.push(tag.id as u8);
+        }
+        (DlBody::Tags(tags), DlArgument::Number(_)) => {
+            if tags.len() == 1 {
+                bv.push(TypeId::CompTagNumber as u8);
+            } else {
+                bv.push(TypeId::CompTagsNumber as u8);
+            }
+
+            bv.push(tag.id as u8);
+        }
+        (DlBody::Tags(tags), DlArgument::Null) => {
+            if tags.len() == 1 {
+                match &tag.id {
+                    DlTid::El => bv.push(TypeId::ElTag as u8),
+                    DlTid::P => bv.push(TypeId::PTag as u8),
+                    _ => {
+                        bv.push(TypeId::BodyTag as u8);
+                        bv.push(tag.id as u8);
+                    }
+                }
+            } else {
+                match &tag.id {
+                    DlTid::El => bv.push(TypeId::ElTags as u8),
+                    DlTid::P => bv.push(TypeId::PTags as u8),
+                    _ => {
+                        bv.push(TypeId::BodyTags as u8);
+                        bv.push(tag.id as u8);
+                    }
+                }
+            }
+        }
+        (DlBody::Null, DlArgument::Text(_)) => match &tag.id {
+            DlTid::Img => bv.push(TypeId::Img as u8),
+            DlTid::A => bv.push(TypeId::AText as u8),
+
+            _ => {
+                bv.push(TypeId::ArgText as u8);
+                bv.push(tag.id as u8);
+            }
+        },
+        (DlBody::Null, DlArgument::Number(_)) => match &tag.id {
+            DlTid::A => bv.push(TypeId::ANumber as u8),
+            _ => {
+                bv.push(TypeId::ArgNumber as u8);
+                bv.push(tag.id as u8);
+            }
+        },
+        (DlBody::Null, DlArgument::Null) => match &tag.id {
+            DlTid::Br => bv.push(TypeId::Br as u8),
+            DlTid::Hr => bv.push(TypeId::Hr as u8),
+
+            _ => {
+                bv.push(TypeId::Id as u8);
+                bv.push(tag.id as u8);
+            }
+        },
+    };
+
+    write_tag_body(bv, &tag.body)?;
+    write_tag_argument(bv, &tag.argument)?;
 
     Ok(())
 }
@@ -84,7 +153,7 @@ fn write_tag_body(bv: &mut Vec<u8>, body: &DlBody) -> Result<(), DaletPackError>
     match body {
         DlBody::Text(s) => write_str(bv, s)?,
         DlBody::Tags(tags) => write_array(bv, tags)?,
-        DlBody::Null => Err(DaletPackError::WriteNullBody)?,
+        DlBody::Null => {}
     };
 
     Ok(())
@@ -93,8 +162,8 @@ fn write_tag_body(bv: &mut Vec<u8>, body: &DlBody) -> Result<(), DaletPackError>
 fn write_tag_argument(bv: &mut Vec<u8>, argument: &DlArgument) -> Result<(), DaletPackError> {
     match argument {
         DlArgument::Text(s) => write_str(bv, s)?,
-        DlArgument::Number(n) => write_int(bv, *n),
-        DlArgument::Null => Err(DaletPackError::WriteNullArgument)?,
+        DlArgument::Number(n) => bv.push(*n),
+        DlArgument::Null => {}
     };
 
     Ok(())

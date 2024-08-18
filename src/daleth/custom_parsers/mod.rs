@@ -14,25 +14,19 @@ use super::types::Span;
 
 pub fn table_to_tag(rows: &Vec<TableCol>) -> Tag {
     Tag::Table(
-        rows.into_iter()
+        rows.iter()
             .map(|row| match row {
                 TableCol::Primary(row) => Tag::Tprow(
-                    row.into_iter()
+                    row.iter()
                         .map(|t| {
-                            Tag::El(NNBody::Text(format!(
-                                "{}",
-                                t.replace("\\]", "]").replace("\\|", "|")
-                            )))
+                            Tag::El(NNBody::Text(t.replace("\\]", "]").replace("\\|", "|").to_string()))
                         })
                         .collect(),
                 ),
                 TableCol::Secondary(row) => Tag::Trow(
-                    row.into_iter()
+                    row.iter()
                         .map(|t| {
-                            Tag::El(NNBody::Text(format!(
-                                "{}",
-                                t.replace("\\]", "]").replace("\\|", "|")
-                            )))
+                            Tag::El(NNBody::Text(t.replace("\\]", "]").replace("\\|", "|").to_string()))
                         })
                         .collect(),
                 ),

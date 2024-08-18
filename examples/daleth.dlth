@@ -42,8 +42,8 @@ br
 # if no tag is specified but a '{- text}' is present, then the 'p' tag is placed
 # '\n' is replaced with ' ' in this format.
 {-
-    Check Dalet too
-    This is one paragraph
+    Check Dalet too,
+    this is one paragraph
 }
 
 {-
@@ -63,7 +63,7 @@ row "center" [
 row [
     # if no tag is specified but a '[[]]' is present, then the 'el' tag
     # with multiple tags body placed
-    
+
     [[
         h2: Features
 
@@ -90,6 +90,10 @@ row [
             code "bash" {
                 npm install
                 npm run dev
+            }
+
+            code "markdown" {~4
+                this is codeblock
             }
 
             # {# Text} Text after "{#" not modified
@@ -122,13 +126,13 @@ row [
 #    Description
 #  ]
 {> table
-    [[ Tag      | Description    ]]
-     [ h        | Heading        ]
-     [ p        | Paragraph      ]
-     [ img      | Image          ]
-     [ link     | Link           ]
-     [ btn      | Button         ]
-     [ ul       | Unordered list ]
-     [ br       | Line break     ]
-    [[ quantity | 7              ]]
+    [[ Tag      | Description    | id ]]
+     [ h        | Heading        | 0  ]
+     [ p        | Paragraph      | 1  ]
+     [ img      | Image          | 2  ]
+     [ link     | Link           | 3  ]
+     [ btn      | Button         | 4  ]
+     [ ul       | Unordered list | 5  ]
+     [ br       | Line break     | 6  ]
+    [[ quantity | 7              | 7  ]]
 }

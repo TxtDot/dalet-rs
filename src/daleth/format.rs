@@ -52,7 +52,7 @@ fn additional_str<'src>(
     ""
 }
 
-pub fn format<'src>(spanned_tokens: &Vec<Spanned<Token<'src>>>) -> String {
+pub fn format(spanned_tokens: &Vec<Spanned<Token<'_>>>) -> String {
     let mut current_indent: usize = 0;
     let mut formatted = String::new();
     let len = spanned_tokens.len();
@@ -162,7 +162,7 @@ pub fn format<'src>(spanned_tokens: &Vec<Spanned<Token<'src>>>) -> String {
                 prepend_indent("}", current_indent)
             ),
 
-            Token::EmptyLine => "\n".to_owned(),
+            Token::EmptyLine => prepend_indent("\n", current_indent),
         };
 
         formatted.push_str(&to_push);

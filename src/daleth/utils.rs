@@ -32,7 +32,7 @@ pub fn set_spaces(input: &str, spaces: usize) -> String {
     prepend_spaces(&trim_indent(input), spaces)
 }
 
-fn trim_unused<'a>(s: &'a str) -> &'a str {
+fn trim_unused(s: &str) -> &str {
     let mut trim_start = 0;
     let mut been_newlines = false;
 
@@ -50,7 +50,7 @@ fn trim_unused<'a>(s: &'a str) -> &'a str {
         }
     }
 
-    &s[(trim_start)..].trim_end()
+    s[(trim_start)..].trim_end()
 }
 
 pub fn prepend_indent(input: &str, indent: usize) -> String {

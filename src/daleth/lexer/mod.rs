@@ -134,7 +134,6 @@ fn textual<'src>() -> impl Parser<'src, &'src str, Token<'src>, extra::Err<Rich<
         .labelled("Body of multiline text");
 
     let paragraph = multiline_text_body
-        .clone()
         .delimited_by(just("{-"), just("}"))
         .map(Token::Paragraph)
         .labelled("Paragraph syntax");
@@ -145,7 +144,6 @@ fn textual<'src>() -> impl Parser<'src, &'src str, Token<'src>, extra::Err<Rich<
         .labelled("Table syntax");
 
     let mltext = multiline_text_body
-        .clone()
         .delimited_by(just('{'), just('}'))
         .map(Token::MLText)
         .labelled("Multiline text");
@@ -156,7 +154,7 @@ fn textual<'src>() -> impl Parser<'src, &'src str, Token<'src>, extra::Err<Rich<
             .labelled("Minimum spaces number");
 
         mlms_n
-            .then(multiline_text_body.clone())
+            .then(multiline_text_body)
             .then_ignore(just("}"))
             .map(|(n, t)| Token::MLMSText(n, t))
             .labelled("Multi line text with min spaces")

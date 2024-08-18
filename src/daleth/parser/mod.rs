@@ -84,7 +84,6 @@ pub fn tag<'tokens, 'src: 'tokens>(
             .labelled("Heading level argument");
 
         let alignarg = text_arg
-            .clone()
             .validate(|t, e, emmiter| match t.as_str() {
                 "start" => AlignArg::Start,
                 "center" => AlignArg::Center,
@@ -110,42 +109,42 @@ pub fn tag<'tokens, 'src: 'tokens>(
         let ul = just(Token::Ul).ignore_then(tags_body.clone()).map(Ul);
         let ol = just(Token::Ol).ignore_then(tags_body.clone()).map(Ol);
         let row = just(Token::Row)
-            .ignore_then(alignarg.clone().or_not())
+            .ignore_then(alignarg.or_not())
             .then(tags_body.clone())
             .map(|(arg, body)| Row(body, arg.unwrap_or(AlignArg::Start)));
         let link = just(Token::Link)
-            .ignore_then(text_arg.clone())
+            .ignore_then(text_arg)
             .then(body.clone())
             .map(|(arg, body)| Link(body, arg));
         let navlink = just(Token::Navlink)
-            .ignore_then(text_arg.clone())
+            .ignore_then(text_arg)
             .then(body.clone())
             .map(|(arg, body)| Navlink(body, arg));
         let btn = just(Token::Btn)
-            .ignore_then(text_arg.clone())
+            .ignore_then(text_arg)
             .then(body.clone())
             .map(|(arg, body)| Btn(body, arg));
         let navbtn = just(Token::Navbtn)
-            .ignore_then(text_arg.clone())
+            .ignore_then(text_arg)
             .then(body.clone())
             .map(|(arg, body)| Navbtn(body, arg));
-        let img = just(Token::Img).ignore_then(text_arg.clone()).map(Img);
+        let img = just(Token::Img).ignore_then(text_arg).map(Img);
         let table = just(Token::Table).ignore_then(tags_body.clone()).map(Table);
         let trow = just(Token::Trow).ignore_then(tags_body.clone()).map(Trow);
         let tprow = just(Token::Tprow).ignore_then(tags_body.clone()).map(Tprow);
         let hr = just(Token::Hr).to(Hr);
-        let b = just(Token::B).ignore_then(text_body.clone()).map(B);
-        let i = just(Token::I).ignore_then(text_body.clone()).map(I);
+        let b = just(Token::B).ignore_then(text_body).map(B);
+        let i = just(Token::I).ignore_then(text_body).map(I);
         let bq = just(Token::Bq).ignore_then(nnbody.clone()).map(Bq);
         let footlnk = just(Token::Footlnk).ignore_then(nnarg).map(Footlnk);
         let footn = just(Token::Footn)
-            .ignore_then(nnarg.clone())
-            .then(text_body.clone())
+            .ignore_then(nnarg)
+            .then(text_body)
             .map(|(arg, body)| Footn(body, arg));
-        let a = just(Token::A).ignore_then(nnarg.clone()).map(A);
-        let s = just(Token::S).ignore_then(text_body.clone()).map(S);
-        let sup = just(Token::Sup).ignore_then(text_body.clone()).map(Sup);
-        let sub = just(Token::Sub).ignore_then(text_body.clone()).map(Sub);
+        let a = just(Token::A).ignore_then(nnarg).map(A);
+        let s = just(Token::S).ignore_then(text_body).map(S);
+        let sup = just(Token::Sup).ignore_then(text_body).map(Sup);
+        let sub = just(Token::Sub).ignore_then(text_body).map(Sub);
         let disc = just(Token::Disc).ignore_then(nnbody.clone()).map(Disc);
         let block = just(Token::Block)
             .ignore_then(alignarg.or_not())
@@ -156,12 +155,12 @@ pub fn tag<'tokens, 'src: 'tokens>(
             .map(Carousel);
         let code = just(Token::Code)
             .ignore_then(tnullarg)
-            .then(text_body.clone())
+            .then(text_body)
             .map(|(arg, body)| Code(body, arg));
-        let pre = just(Token::Pre).ignore_then(text_body.clone()).map(Pre);
+        let pre = just(Token::Pre).ignore_then(text_body).map(Pre);
         let meta = just(Token::Meta)
             .ignore_then(text_arg)
-            .then(text_body.clone())
+            .then(text_body)
             .map(|(arg, body)| Meta(body, arg));
 
         let el_text = select! {
@@ -175,7 +174,7 @@ pub fn tag<'tokens, 'src: 'tokens>(
             .map(|v| El(NNBody::Tags(v)));
 
         let paragraph = select! {
-            Token::Paragraph(t) => P(NNBody::Text(t.replace("\n", " ").trim().to_owned()))
+            Token::Paragraph(t) => P(NNBody::Text(t.replace('\n', " ").trim().to_owned()))
         }
         .labelled("Paragraph");
 
