@@ -27,10 +27,10 @@ chumsky = { version = "=1.0.0-alpha.7", features = ["label"], optional = true }
 ariadne = { version = "0.4.1", optional = true }
 
 [dev-dependencies]
-rmp-serde = { version = "1.3.0" }
-bincode = { version = "1.3.3" }
+rmp-serde = "1.3.0"
+bincode = "1.3.3"
 flate2 = "1.0"
-
+dlhn = "0.1"
 
 [features]
 default = ["types", "daletpack", "parsers", "daleth"]

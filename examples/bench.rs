@@ -1,8 +1,10 @@
 use dalet::{
+    daletl::DlPage,
     daletpack::*,
     typed::{Hl, TNullArg, Tag::*},
 };
 use flate2::Compression;
+use serde::{Deserialize, Serialize};
 use std::io::Write;
 
 #[macro_export]
@@ -11,22 +13,57 @@ macro_rules! iprint {
         let start = std::time::Instant::now();
         let result = $func;
         let elapsed = start.elapsed();
-        println!("{} ({:#?}): {}", $name, elapsed, result.len());
+        println!("{} ({:#?}): {} bytes", $name, elapsed, result.len());
 
         result
     }};
 }
 
-pub fn compress_deflate(data: &[u8]) -> std::io::Result<Vec<u8>> {
+#[macro_export]
+macro_rules! bench {
+    ($name:expr, $func:expr) => {{
+        let res = iprint!($name, $func);
+        iprint!(
+            $name.to_owned() + " zstd",
+            utils::compress_zstd(&res).unwrap()
+        );
+        iprint!($name.to_owned() + " zlib", compress_zlib(&res).unwrap());
+        iprint!(
+            $name.to_owned() + " deflate",
+            compress_deflate(&res).unwrap()
+        );
+
+        println!();
+
+        res
+    }};
+}
+
+fn compress_deflate(data: &[u8]) -> std::io::Result<Vec<u8>> {
     let mut c = flate2::write::DeflateEncoder::new(Vec::new(), Compression::default());
     c.write_all(data)?;
     c.finish()
 }
 
-pub fn compress_zlib(data: &[u8]) -> std::io::Result<Vec<u8>> {
+fn compress_zlib(data: &[u8]) -> std::io::Result<Vec<u8>> {
     let mut c = flate2::write::ZlibEncoder::new(Vec::new(), Compression::default());
     c.write_all(data)?;
     c.finish()
+}
+
+fn dlhn_serialize(page: &DlPage) -> Vec<u8> {
+    let mut output = Vec::new();
+    let mut serializer = dlhn::Serializer::new(&mut output);
+    page.serialize(&mut serializer).unwrap();
+
+    output
+}
+
+fn dlhn_deserialize(output: &Vec<u8>) -> DlPage {
+    let mut reader = output.as_slice();
+    let mut deserializer = dlhn::Deserializer::new(&mut reader);
+
+    DlPage::deserialize(&mut deserializer).unwrap()
 }
 
 fn main() {
@@ -78,44 +115,9 @@ fn main() {
 
     let dalet_page = page.into();
 
-    let markdown = iprint!("Markdown", include_str!("./bench.md").as_bytes().to_vec());
-    let daletpack = iprint!("Daletpack", encode_no_compress(&dalet_page).unwrap());
-    let messagepack = iprint!("Messagepack", rmp_serde::to_vec(&dalet_page).unwrap());
-    let bincode = iprint!("Bincode", bincode::serialize(&dalet_page).unwrap());
-
-    println!();
-
-    iprint!("Markdown zstd", utils::compress_zstd(&markdown).unwrap());
-    let daletpack = iprint!("Daletpack zstd", utils::compress_zstd(&daletpack).unwrap());
-    iprint!(
-        "Messagepack zstd",
-        utils::compress_zstd(&messagepack).unwrap()
-    );
-    iprint!("Bincode zstd", utils::compress_zstd(&bincode).unwrap());
-
-    println!();
-
-    iprint!("Markdown Zlib", compress_zlib(&markdown).unwrap());
-    iprint!("Daletpack Zlib", compress_zlib(&daletpack).unwrap());
-    iprint!("Messagepack Zlib", compress_zlib(&messagepack).unwrap());
-    iprint!("Bincode Zlib", compress_zlib(&bincode).unwrap());
-
-    println!();
-
-    iprint!("Markdown deflate", compress_deflate(&markdown).unwrap());
-    iprint!("Daletpack deflate", compress_deflate(&daletpack).unwrap());
-    iprint!(
-        "Messagepack deflate",
-        compress_deflate(&messagepack).unwrap()
-    );
-    iprint!("Bincode deflate", compress_deflate(&bincode).unwrap());
-
-    println!();
-
-    let decoded = iprint!(
-        "Daletpack decode",
-        Decoder::new(&daletpack).unwrap().decode().unwrap().data
-    );
-
-    println!("{:#?}", decoded);
+    bench!("Markdown", include_str!("./bench.md").as_bytes().to_vec());
+    bench!("Daletpack", encode_no_compress(&dalet_page).unwrap());
+    bench!("Dlhn", dlhn_serialize(&dalet_page));
+    bench!("Messagepack", rmp_serde::to_vec(&dalet_page).unwrap());
+    bench!("Bincode", bincode::serialize(&dalet_page).unwrap());
 }
