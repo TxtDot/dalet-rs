@@ -1,4 +1,4 @@
-use crate::daletl::{DlArgument, DlBody, IsNull};
+use crate::daletl::{DlArg, DlBody, IsNull};
 
 impl IsNull for DlBody {
     fn is_null(&self) -> bool {
@@ -6,7 +6,7 @@ impl IsNull for DlBody {
     }
 }
 
-impl IsNull for DlArgument {
+impl IsNull for DlArg {
     fn is_null(&self) -> bool {
         matches!(self, Self::Null)
     }

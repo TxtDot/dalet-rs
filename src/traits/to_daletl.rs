@@ -1,7 +1,7 @@
 use crate::{daletl::*, typed::*};
 
 const NB: DlBody = DlBody::Null;
-const NA: DlArgument = DlArgument::Null;
+const NA: DlArg = DlArg::Null;
 
 impl From<Tag> for DlTag {
     fn from(item: Tag) -> DlTag {
@@ -41,8 +41,8 @@ impl From<Tag> for DlTag {
     }
 }
 
-impl From<Hl> for DlArgument {
-    fn from(item: Hl) -> DlArgument {
+impl From<Hl> for DlArg {
+    fn from(item: Hl) -> DlArg {
         match item {
             Hl::One => NA,
             Hl::Two => 2u8.into(),
@@ -54,8 +54,8 @@ impl From<Hl> for DlArgument {
     }
 }
 
-impl From<AlignArg> for DlArgument {
-    fn from(item: AlignArg) -> DlArgument {
+impl From<AlignArg> for DlArg {
+    fn from(item: AlignArg) -> DlArg {
         match item {
             AlignArg::Start => NA,
             AlignArg::Center => 1u8.into(),
@@ -64,8 +64,8 @@ impl From<AlignArg> for DlArgument {
     }
 }
 
-impl From<TNullArg> for DlArgument {
-    fn from(item: TNullArg) -> DlArgument {
+impl From<TNullArg> for DlArg {
+    fn from(item: TNullArg) -> DlArg {
         match item {
             TNullArg::Text(s) => s.into(),
             TNullArg::Null => NA,
@@ -83,8 +83,8 @@ impl From<Body> for DlBody {
     }
 }
 
-impl From<NNArg> for DlArgument {
-    fn from(item: NNArg) -> DlArgument {
+impl From<NNArg> for DlArg {
+    fn from(item: NNArg) -> DlArg {
         match item {
             NNArg::Number(v) => v.into(),
             NNArg::Text(v) => v.into(),

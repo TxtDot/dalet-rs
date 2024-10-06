@@ -1,10 +1,8 @@
 use dalet::{
-    daletl::DlPage,
     daletpack::*,
     typed::{Hl, TNullArg, Tag::*},
 };
 use flate2::Compression;
-use serde::{Deserialize, Serialize};
 use std::io::Write;
 
 #[macro_export]
@@ -49,21 +47,6 @@ fn compress_zlib(data: &[u8]) -> std::io::Result<Vec<u8>> {
     let mut c = flate2::write::ZlibEncoder::new(Vec::new(), Compression::default());
     c.write_all(data)?;
     c.finish()
-}
-
-fn dlhn_serialize(page: &DlPage) -> Vec<u8> {
-    let mut output = Vec::new();
-    let mut serializer = dlhn::Serializer::new(&mut output);
-    page.serialize(&mut serializer).unwrap();
-
-    output
-}
-
-fn dlhn_deserialize(output: &Vec<u8>) -> DlPage {
-    let mut reader = output.as_slice();
-    let mut deserializer = dlhn::Deserializer::new(&mut reader);
-
-    DlPage::deserialize(&mut deserializer).unwrap()
 }
 
 fn main() {
@@ -117,7 +100,6 @@ fn main() {
 
     bench!("Markdown", include_str!("./bench.md").as_bytes().to_vec());
     bench!("Daletpack", encode_no_compress(&dalet_page).unwrap());
-    bench!("Dlhn", dlhn_serialize(&dalet_page));
     bench!("Messagepack", rmp_serde::to_vec(&dalet_page).unwrap());
     bench!("Bincode", bincode::serialize(&dalet_page).unwrap());
 }

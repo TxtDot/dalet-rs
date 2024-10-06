@@ -12,18 +12,18 @@ pub struct DlPage {
 pub struct DlTag {
     pub id: DlTid,
     pub body: DlBody,
-    pub argument: DlArgument,
+    pub argument: DlArg,
 }
 
 impl DlTag {
     #[inline]
-    pub fn new(id: DlTid, body: DlBody, argument: DlArgument) -> DlTag {
+    pub fn new(id: DlTid, body: DlBody, argument: DlArg) -> DlTag {
         DlTag { id, body, argument }
     }
 }
 
 #[inline]
-pub fn dlt_new(id: DlTid, body: DlBody, argument: DlArgument) -> DlTag {
+pub fn dlt_new(id: DlTid, body: DlBody, argument: DlArg) -> DlTag {
     DlTag::new(id, body, argument)
 }
 
@@ -37,7 +37,7 @@ pub enum DlBody {
 
 #[derive(AutoFrom, Serialize, Deserialize, Debug, Clone, PartialEq, Eq)]
 #[serde(untagged)]
-pub enum DlArgument {
+pub enum DlArg {
     Text(String),
     Number(u8),
     Null,

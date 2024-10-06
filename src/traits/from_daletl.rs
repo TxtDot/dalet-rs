@@ -48,35 +48,35 @@ impl TryFrom<DlTag> for Tag {
     }
 }
 
-impl TryFrom<DlArgument> for Hl {
+impl TryFrom<DlArg> for Hl {
     type Error = ConversionError;
 
-    fn try_from(value: DlArgument) -> Result<Self, Self::Error> {
+    fn try_from(value: DlArg) -> Result<Self, Self::Error> {
         match value {
-            DlArgument::Number(n) => n.try_into().map_err(|_| ConversionError),
+            DlArg::Number(n) => n.try_into().map_err(|_| ConversionError),
             _ => Err(ConversionError),
         }
     }
 }
 
-impl TryFrom<DlArgument> for AlignArg {
+impl TryFrom<DlArg> for AlignArg {
     type Error = ConversionError;
 
-    fn try_from(value: DlArgument) -> Result<Self, Self::Error> {
+    fn try_from(value: DlArg) -> Result<Self, Self::Error> {
         match value {
-            DlArgument::Number(n) => n.try_into().map_err(|_| ConversionError),
+            DlArg::Number(n) => n.try_into().map_err(|_| ConversionError),
             _ => Err(ConversionError),
         }
     }
 }
 
-impl TryFrom<DlArgument> for TNullArg {
+impl TryFrom<DlArg> for TNullArg {
     type Error = ConversionError;
 
-    fn try_from(value: DlArgument) -> Result<Self, Self::Error> {
+    fn try_from(value: DlArg) -> Result<Self, Self::Error> {
         match value {
-            DlArgument::Text(t) => Ok(TNullArg::Text(t)),
-            DlArgument::Null => Ok(TNullArg::Null),
+            DlArg::Text(t) => Ok(TNullArg::Text(t)),
+            DlArg::Null => Ok(TNullArg::Null),
             _ => Err(ConversionError),
         }
     }
@@ -109,24 +109,24 @@ impl TryFrom<DlBody> for String {
     }
 }
 
-impl TryFrom<DlArgument> for NNArg {
+impl TryFrom<DlArg> for NNArg {
     type Error = ConversionError;
 
-    fn try_from(value: DlArgument) -> Result<Self, Self::Error> {
+    fn try_from(value: DlArg) -> Result<Self, Self::Error> {
         match value {
-            DlArgument::Text(t) => Ok(t.into()),
-            DlArgument::Number(n) => Ok(n.into()),
-            DlArgument::Null => Err(ConversionError),
+            DlArg::Text(t) => Ok(t.into()),
+            DlArg::Number(n) => Ok(n.into()),
+            DlArg::Null => Err(ConversionError),
         }
     }
 }
 
-impl TryFrom<DlArgument> for String {
+impl TryFrom<DlArg> for String {
     type Error = ConversionError;
 
-    fn try_from(value: DlArgument) -> Result<Self, Self::Error> {
+    fn try_from(value: DlArg) -> Result<Self, Self::Error> {
         match value {
-            DlArgument::Text(s) => Ok(s),
+            DlArg::Text(s) => Ok(s),
             _ => Err(ConversionError),
         }
     }

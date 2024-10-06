@@ -43,35 +43,22 @@ impl From<TryFromPrimitiveError<DlTid>> for DaletPackDecodeError {
 #[derive(Debug, Clone, PartialEq, Eq, TryFromPrimitive, Copy)]
 #[repr(u8)]
 pub enum TypeId {
-    TextEnd = 0x00,
-    TagsEnd,
-    BodyText = 0xa0,
-    BodyTag,
-    BodyTags,
-    ArgText = 0xb0,
-    ArgNumber,
-    CompTextText = 0xc0,
-    CompTagText,
-    CompTagsText,
-    CompTextNumber,
-    CompTagNumber,
-    CompTagsNumber,
-    Id = 0xd0,
-    ElText,
-    ElTag,
-    ElTags,
-    PText,
-    PTag,
-    PTags,
-    Br,
-    Hr,
-    Img,
-    B,
-    I,
-    ANumber,
-    AText,
-    S,
-    Sup,
-    Sub,
-    Meta,
+    EndOfBody,
+
+    TextBody,
+    TagBody,
+    TagsBody,
+
+    TextArg,
+    NumberArg,
+
+    TextText,
+    TagText,
+    TagsText,
+
+    TextNumber,
+    TagNumber,
+    TagsNumber,
+
+    JustId,
 }
