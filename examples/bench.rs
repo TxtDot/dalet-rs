@@ -2,8 +2,6 @@ use dalet::{
     daletpack::*,
     typed::{Hl, TNullArg, Tag::*},
 };
-use flate2::Compression;
-use std::io::Write;
 
 #[macro_export]
 macro_rules! iprint {
@@ -21,32 +19,9 @@ macro_rules! iprint {
 macro_rules! bench {
     ($name:expr, $func:expr) => {{
         let res = iprint!($name, $func);
-        iprint!(
-            $name.to_owned() + " zstd",
-            utils::compress_zstd(&res).unwrap()
-        );
-        iprint!($name.to_owned() + " zlib", compress_zlib(&res).unwrap());
-        iprint!(
-            $name.to_owned() + " deflate",
-            compress_deflate(&res).unwrap()
-        );
-
-        println!();
 
         res
     }};
-}
-
-fn compress_deflate(data: &[u8]) -> std::io::Result<Vec<u8>> {
-    let mut c = flate2::write::DeflateEncoder::new(Vec::new(), Compression::default());
-    c.write_all(data)?;
-    c.finish()
-}
-
-fn compress_zlib(data: &[u8]) -> std::io::Result<Vec<u8>> {
-    let mut c = flate2::write::ZlibEncoder::new(Vec::new(), Compression::default());
-    c.write_all(data)?;
-    c.finish()
 }
 
 fn main() {
@@ -98,8 +73,23 @@ fn main() {
 
     let dalet_page = page.into();
 
-    bench!("Markdown", include_str!("./bench.md").as_bytes().to_vec());
-    bench!("Daletpack", encode_no_compress(&dalet_page).unwrap());
-    bench!("Messagepack", rmp_serde::to_vec(&dalet_page).unwrap());
-    bench!("Bincode", bincode::serialize(&dalet_page).unwrap());
+    let encoded = bench!("Daletpack", encode(&dalet_page).unwrap());
+
+    assert_eq!(
+        Decoder::new(&encoded).unwrap().decode().unwrap(),
+        dalet_page
+    );
+
+    bench!(
+        "Markdown",
+        utils::compress(&include_str!("./bench.md").as_bytes().to_vec()).unwrap()
+    );
+    bench!(
+        "Messagepack",
+        utils::compress(&rmp_serde::to_vec(&dalet_page).unwrap()).unwrap()
+    );
+    bench!(
+        "Bincode",
+        utils::compress(&bincode::serialize(&dalet_page).unwrap()).unwrap()
+    );
 }

@@ -46,18 +46,15 @@ pub enum TypeId {
     EndOfBody,
 
     TextBody,
-    TagBody,
     TagsBody,
 
     TextArg,
     NumberArg,
 
     TextText,
-    TagText,
     TagsText,
 
     TextNumber,
-    TagNumber,
     TagsNumber,
 
     JustId,
