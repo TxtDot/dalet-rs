@@ -26,7 +26,7 @@ Main implementation of [Dalet](https://github.com/txtdot/dalet) in rust, with pa
 - [x] lexer
 - [x] formatter
 - [x] parser
-- [ ] tree-sitter grammar for editors
+- [x] tree-sitter grammar for editors
 
 ### Lib-only
 
