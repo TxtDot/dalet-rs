@@ -1,106 +1,99 @@
 use enum_procs::AutoFrom;
 use num_enum::TryFromPrimitive;
+use serde::{Deserialize, Serialize};
+use serde_repr::{Deserialize_repr, Serialize_repr};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Page {
-    pub data: Vec<Tag>,
+    pub title: TextOrNull,
+    pub description: TextOrNull,
+    pub body: Vec<Tag>,
 }
 
 impl Page {
-    pub fn new(data: Vec<Tag>) -> Self {
-        Self { data }
+    pub fn new(title: TextOrNull, description: TextOrNull, body: Vec<Tag>) -> Self {
+        Self {
+            title,
+            description,
+            body,
+        }
     }
 }
 
 pub struct ConversionError;
 
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub enum Tag {
-    El(NNBody),
-    H(TBody, Hl),
-    P(NNBody),
-    Br,
-    Ul(Vec<Tag>),
-    Ol(Vec<Tag>),
-    Row(Vec<Tag>, AlignArg),
-    Link(Body, TArg),
-    Navlink(Body, TArg),
-    Btn(Body, TArg),
-    Navbtn(Body, TArg),
-    Img(TArg),
-    Table(Vec<Tag>),
+#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq)]
+pub enum TableRows {
     Trow(Vec<Tag>),
     Tprow(Vec<Tag>),
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq)]
+#[serde(tag = "type")]
+pub enum Tag {
+    El { body: NotNullBody },
+    H { body: Text, heading: HeadingLevel },
+    P { body: NotNullBody },
+    Br,
+    Ul { body: Vec<Tag> },
+    Ol { body: Vec<Tag> },
+    Row { body: Vec<Tag> },
+    Link { body: Any, dref: Text },
+    Navlink { body: Any, dref: Text },
+    Btn { body: Any, dref: Text },
+    Navbtn { body: Any, dref: Text },
+    Img { src: Text },
+    Table { body: Vec<TableRows> },
     Hr,
-    B(TBody),
-    I(TBody),
-    Bq(NNBody),
-    Footlnk(NNArg),
-    Footn(TBody, NNArg),
-    A(NNArg),
-    S(TBody),
-    Sup(TBody),
-    Sub(TBody),
-    Disc(NNBody),
-    Block(NNBody, AlignArg),
-    Carousel(Vec<Tag>),
-    Code(TBody, TNullArg),
-    Pre(TBody),
-    Meta(TBody, TArg),
+    B { body: Text },
+    I { body: Text },
+    Bq { body: NotNullBody },
+    Footlnk { footnote: u64 },
+    Footn { body: Text, footnote: u64 },
+    A { anchor: Text },
+    S { body: Text },
+    Sup { body: Text },
+    Sub { body: Text },
+    Disc { body: NotNullBody },
+    Carousel { body: Vec<Tag> },
+    Code { body: Text, language: TextOrNull },
+    Pre { body: Text },
 }
 
-#[derive(AutoFrom, Debug, Clone, PartialEq, Eq)]
-pub enum Body {
+pub type Text = String;
+
+#[derive(AutoFrom, Debug, Serialize, Deserialize, Clone, PartialEq, Eq)]
+pub enum Any {
     Text(String),
     Tags(Vec<Tag>),
     Null,
 }
 
-#[derive(AutoFrom, Debug, Clone, PartialEq, Eq)]
-pub enum NNBody {
+#[derive(AutoFrom, Debug, Serialize, Deserialize, Clone, PartialEq, Eq)]
+pub enum TextOrNumber {
+    Text(String),
+    Number(u64),
+}
+
+#[derive(AutoFrom, Debug, Serialize, Deserialize, Clone, PartialEq, Eq)]
+pub enum NotNullBody {
     Text(String),
     Tags(Vec<Tag>),
 }
 
-/// Text body
-pub type TBody = String;
-
-#[derive(AutoFrom, Debug, Clone, PartialEq, Eq)]
-pub enum TNullArg {
+#[derive(AutoFrom, Debug, Serialize, Deserialize, Clone, PartialEq, Eq)]
+pub enum TextOrNull {
     Text(String),
     Null,
 }
 
-/// Text argument
-pub type TArg = String;
-
-#[derive(AutoFrom, Debug, Clone, PartialEq, Eq)]
-/// Not null argument
-pub enum NNArg {
-    Text(String),
-    Number(u8),
-}
-
-#[derive(Debug, Clone, PartialEq, Eq, TryFromPrimitive)]
+#[derive(Debug, Clone, Serialize_repr, Deserialize_repr, PartialEq, Eq, TryFromPrimitive)]
 #[repr(u8)]
-pub enum AlignArg {
-    Start,
-    Center,
-    End,
-}
-
-#[derive(Debug, Clone, PartialEq, Eq, TryFromPrimitive)]
-#[repr(u8)]
-/// Heading level
-pub enum Hl {
+pub enum HeadingLevel {
     One = 1,
     Two,
     Three,
     Four,
     Five,
     Six,
-}
-
-pub trait ResolveTitle {
-    fn resolve_title(&self) -> Option<String>;
 }

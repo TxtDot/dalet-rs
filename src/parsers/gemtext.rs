@@ -1,6 +1,7 @@
 use crate::typed::{
-    Body, Hl, Page, TNullArg,
+    Any, HeadingLevel, Page,
     Tag::{self, *},
+    TextOrNull,
 };
 
 #[derive(Debug)]
@@ -22,7 +23,7 @@ pub fn parse_gemtext(s: &str) -> Result<Page, GemTextParseError> {
         if preformatted && !line.starts_with("```") {
             preformatted_text.push(line);
         } else if list_before && !line.starts_with("* ") {
-            page.push(Tag::Ul(list.clone()));
+            page.push(Tag::Ul { body: list.clone() });
             list_before = false;
             list.clear();
         } else if line.starts_with("=>") {
@@ -32,36 +33,64 @@ pub fn parse_gemtext(s: &str) -> Result<Page, GemTextParseError> {
             let url = body.next().ok_or(GemTextParseError::InvalidLink)?.trim();
 
             match body.next() {
-                Some(label) => page.push(P(vec![Navlink(label.trim().into(), url.into())].into())),
-                None => page.push(P(vec![Navlink(Body::Null, url.into())].into())),
+                Some(label) => page.push(P {
+                    body: vec![Navlink {
+                        body: label.trim().into(),
+                        dref: url.into(),
+                    }]
+                    .into(),
+                }),
+                None => page.push(P {
+                    body: vec![Navlink {
+                        body: Any::Null,
+                        dref: url.into(),
+                    }]
+                    .into(),
+                }),
             };
         } else if line.starts_with("# ") {
             let body = line.split_off(2);
-            page.push(H(body.trim().into(), Hl::One));
+            page.push(H {
+                body: body.trim().into(),
+                heading: HeadingLevel::One,
+            });
         } else if line.starts_with("## ") {
             let body = line.split_off(3);
-            page.push(H(body.trim().into(), Hl::Two));
+            page.push(H {
+                body: body.trim().into(),
+                heading: HeadingLevel::Two,
+            });
         } else if line.starts_with("### ") {
             let body = line.split_off(4);
-            page.push(H(body.trim().into(), Hl::Three));
+            page.push(H {
+                body: body.trim().into(),
+                heading: HeadingLevel::Three,
+            });
         } else if line.starts_with("* ") {
             let body = line.split_off(2);
-            list.push(El(body.into()));
+            list.push(El { body: body.into() });
             list_before = true;
         } else if line.starts_with("> ") {
             let body = line.split_off(2);
-            page.push(Bq(body.into()));
+            page.push(Bq { body: body.into() });
         } else if line.starts_with("```") {
             if preformatted {
-                page.push(Code(preformatted_text.join("\n"), TNullArg::Null));
+                page.push(Code {
+                    body: preformatted_text.join("\n"),
+                    language: TextOrNull::Null,
+                });
                 preformatted_text.clear();
             }
 
             preformatted = !preformatted;
         } else if !line.is_empty() {
-            page.push(P(line.into()));
+            page.push(P { body: line.into() });
         }
     }
 
-    Ok(Page { data: page })
+    Ok(Page {
+        title: TextOrNull::Null,
+        description: TextOrNull::Null,
+        body: page,
+    })
 }

@@ -10,33 +10,26 @@
 
 Main implementation of [Dalet](https://github.com/txtdot/dalet) in rust, with parsers.
 
+> [!WARNING]
+> Project in rewriting stage, all old features are deleted.
+
 ## TODO
 
 ### Daletpack
 
-- [x] Encode
-- [x] Decode
-
-### Daletl
-
-- [x] types
-
-### Daleth
-
-- [x] lexer
-- [x] formatter
-- [x] parser
-- [x] tree-sitter grammar for editors
-
-### Lib-only
-
 - [x] typed tags
-- [x] convert typed tags to daletl
-- [x] convert daletl to typed tags
+- [ ] Encode
+- [ ] Decode
+
+### DaletMark
+
+- [ ] parser
+- [ ] formatter
+- [ ] tree-sitter grammar for editors
 
 ### Cli
 
 - [ ] formatter
 - [ ] linter
-- [ ] convert daleth to daletpack
-- [ ] serve daleth, daletpack
+- [ ] convert DaletMark to DaletPack
+- [ ] serve DaletMark, DaletPack
