@@ -3,7 +3,7 @@ use num_enum::TryFromPrimitive;
 use serde::{Deserialize, Serialize};
 use serde_repr::{Deserialize_repr, Serialize_repr};
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq)]
 pub struct Page {
     pub title: TextOrNull,
     pub description: TextOrNull,
@@ -29,7 +29,6 @@ pub enum TableRows {
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq)]
-#[serde(tag = "type")]
 pub enum Tag {
     El { body: NotNullBody },
     H { body: Text, heading: HeadingLevel },

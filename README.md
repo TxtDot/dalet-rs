@@ -15,11 +15,11 @@ Main implementation of [Dalet](https://github.com/txtdot/dalet) in rust, with pa
 
 ## TODO
 
-### Daletpack
+### DaletPack
 
 - [x] typed tags
-- [ ] Encode
-- [ ] Decode
+- [x] Encode
+- [x] Decode
 
 ### DaletMark
 
