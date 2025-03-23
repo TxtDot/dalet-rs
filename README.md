@@ -17,7 +17,7 @@ Main implementation of [Dalet](https://github.com/txtdot/dalet) in rust, with pa
 
 ### DaletPack
 
-- [x] typed tags
+- [x] Types
 - [x] Encode
 - [x] Decode
 
