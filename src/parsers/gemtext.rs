@@ -1,5 +1,5 @@
 use crate::typed::{
-    Any, HeadingLevel, Page,
+    BodyOrNull, HeadingLevel, Page,
     Tag::{self, *},
     TextOrNull,
 };
@@ -42,7 +42,7 @@ pub fn parse_gemtext(s: &str) -> Result<Page, GemTextParseError> {
                 }),
                 None => page.push(P {
                     body: vec![NavLink {
-                        body: Any::Null,
+                        body: BodyOrNull::Null,
                         dref: url.into(),
                     }]
                     .into(),

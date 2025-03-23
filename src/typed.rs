@@ -30,30 +30,30 @@ pub enum TableRows {
 
 #[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq)]
 pub enum Tag {
-    El { body: NotNullBody },
+    El { body: Body },
     H { body: Text, heading: HeadingLevel },
-    P { body: NotNullBody },
+    P { body: Body },
     LineBreak,
     Ul { body: Vec<Tag> },
     Ol { body: Vec<Tag> },
     Row { body: Vec<Tag> },
-    Link { body: Any, dref: Text },
-    NavLink { body: Any, dref: Text },
-    Button { body: Any, dref: Text },
-    NavButton { body: Any, dref: Text },
+    Link { body: BodyOrNull, dref: Text },
+    NavLink { body: BodyOrNull, dref: Text },
+    Button { body: BodyOrNull, dref: Text },
+    NavButton { body: BodyOrNull, dref: Text },
     Img { src: Text },
     Table { body: Vec<TableRows> },
     HorizontalBreak,
     B { body: Text },
     I { body: Text },
-    Bq { body: NotNullBody },
+    Bq { body: Body },
     FootLink { footnote: u64 },
     FootNote { body: Text, footnote: u64 },
     A { anchor: Text },
     S { body: Text },
     Sup { body: Text },
     Sub { body: Text },
-    Disc { body: NotNullBody },
+    Disc { body: Body },
     Carousel { body: Vec<Tag> },
     Code { body: Text, language: TextOrNull },
     Pre { body: Text },
@@ -62,7 +62,13 @@ pub enum Tag {
 pub type Text = String;
 
 #[derive(AutoFrom, Debug, Serialize, Deserialize, Clone, PartialEq, Eq)]
-pub enum Any {
+pub enum Body {
+    Text(String),
+    Tags(Vec<Tag>),
+}
+
+#[derive(AutoFrom, Debug, Serialize, Deserialize, Clone, PartialEq, Eq)]
+pub enum BodyOrNull {
     Text(String),
     Tags(Vec<Tag>),
     Null,
@@ -72,12 +78,6 @@ pub enum Any {
 pub enum TextOrNumber {
     Text(String),
     Number(u64),
-}
-
-#[derive(AutoFrom, Debug, Serialize, Deserialize, Clone, PartialEq, Eq)]
-pub enum NotNullBody {
-    Text(String),
-    Tags(Vec<Tag>),
 }
 
 #[derive(AutoFrom, Debug, Serialize, Deserialize, Clone, PartialEq, Eq)]
