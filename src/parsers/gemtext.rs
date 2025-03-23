@@ -34,14 +34,14 @@ pub fn parse_gemtext(s: &str) -> Result<Page, GemTextParseError> {
 
             match body.next() {
                 Some(label) => page.push(P {
-                    body: vec![Navlink {
+                    body: vec![NavLink {
                         body: label.trim().into(),
                         dref: url.into(),
                     }]
                     .into(),
                 }),
                 None => page.push(P {
-                    body: vec![Navlink {
+                    body: vec![NavLink {
                         body: Any::Null,
                         dref: url.into(),
                     }]
