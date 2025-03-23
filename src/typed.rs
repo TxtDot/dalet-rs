@@ -24,8 +24,8 @@ pub struct ConversionError;
 
 #[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq)]
 pub enum TableRows {
-    Trow(Vec<Tag>),
-    Tprow(Vec<Tag>),
+    Default(Vec<Tag>),
+    Primary(Vec<Tag>),
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq)]
