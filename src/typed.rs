@@ -20,8 +20,6 @@ impl Page {
     }
 }
 
-pub struct ConversionError;
-
 #[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq)]
 pub enum TableRows {
     Default(Vec<Tag>),
