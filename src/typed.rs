@@ -65,12 +65,6 @@ pub enum Body {
     Tags(Vec<Tag>),
 }
 
-#[derive(AutoFrom, Debug, Serialize, Deserialize, Clone, PartialEq, Eq)]
-pub enum TextOrNumber {
-    Text(String),
-    Number(u64),
-}
-
 #[derive(Debug, Clone, Serialize_repr, Deserialize_repr, PartialEq, Eq, TryFromPrimitive)]
 #[repr(u8)]
 pub enum HeadingLevel {
