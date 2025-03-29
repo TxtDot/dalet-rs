@@ -1,7 +1,6 @@
 use crate::typed::{
-    BodyOrNull, HeadingLevel, Page,
+    HeadingLevel, Page,
     Tag::{self, *},
-    TextOrNull,
 };
 
 #[derive(Debug)]
@@ -35,14 +34,14 @@ pub fn parse_gemtext(s: &str) -> Result<Page, GemTextParseError> {
             match body.next() {
                 Some(label) => page.push(P {
                     body: vec![NavLink {
-                        body: label.trim().into(),
+                        body: Some(label.trim().into()),
                         dref: url.into(),
                     }]
                     .into(),
                 }),
                 None => page.push(P {
                     body: vec![NavLink {
-                        body: BodyOrNull::Null,
+                        body: None,
                         dref: url.into(),
                     }]
                     .into(),
@@ -77,7 +76,7 @@ pub fn parse_gemtext(s: &str) -> Result<Page, GemTextParseError> {
             if preformatted {
                 page.push(Code {
                     body: preformatted_text.join("\n"),
-                    language: TextOrNull::Null,
+                    language: None,
                 });
                 preformatted_text.clear();
             }
@@ -89,8 +88,8 @@ pub fn parse_gemtext(s: &str) -> Result<Page, GemTextParseError> {
     }
 
     Ok(Page {
-        title: TextOrNull::Null,
-        description: TextOrNull::Null,
+        title: None,
+        description: None,
         body: page,
     })
 }

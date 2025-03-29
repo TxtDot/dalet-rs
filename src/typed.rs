@@ -5,13 +5,13 @@ use serde_repr::{Deserialize_repr, Serialize_repr};
 
 #[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq)]
 pub struct Page {
-    pub title: TextOrNull,
-    pub description: TextOrNull,
+    pub title: Option<Text>,
+    pub description: Option<Text>,
     pub body: Vec<Tag>,
 }
 
 impl Page {
-    pub fn new(title: TextOrNull, description: TextOrNull, body: Vec<Tag>) -> Self {
+    pub fn new(title: Option<Text>, description: Option<Text>, body: Vec<Tag>) -> Self {
         Self {
             title,
             description,
@@ -35,10 +35,10 @@ pub enum Tag {
     Ul { body: Vec<Tag> },
     Ol { body: Vec<Tag> },
     Row { body: Vec<Tag> },
-    Link { body: BodyOrNull, dref: Text },
-    NavLink { body: BodyOrNull, dref: Text },
-    Button { body: BodyOrNull, dref: Text },
-    NavButton { body: BodyOrNull, dref: Text },
+    Link { body: Option<Body>, dref: Text },
+    NavLink { body: Option<Body>, dref: Text },
+    Button { body: Option<Body>, dref: Text },
+    NavButton { body: Option<Body>, dref: Text },
     Img { src: Text },
     Table { body: Vec<TableRows> },
     HorizontalBreak,
@@ -53,7 +53,7 @@ pub enum Tag {
     Sub { body: Text },
     Disc { body: Body },
     Carousel { body: Vec<Tag> },
-    Code { body: Text, language: TextOrNull },
+    Code { body: Text, language: Option<Text> },
     Pre { body: Text },
 }
 
@@ -66,22 +66,9 @@ pub enum Body {
 }
 
 #[derive(AutoFrom, Debug, Serialize, Deserialize, Clone, PartialEq, Eq)]
-pub enum BodyOrNull {
-    Text(String),
-    Tags(Vec<Tag>),
-    Null,
-}
-
-#[derive(AutoFrom, Debug, Serialize, Deserialize, Clone, PartialEq, Eq)]
 pub enum TextOrNumber {
     Text(String),
     Number(u64),
-}
-
-#[derive(AutoFrom, Debug, Serialize, Deserialize, Clone, PartialEq, Eq)]
-pub enum TextOrNull {
-    Text(String),
-    Null,
 }
 
 #[derive(Debug, Clone, Serialize_repr, Deserialize_repr, PartialEq, Eq, TryFromPrimitive)]
